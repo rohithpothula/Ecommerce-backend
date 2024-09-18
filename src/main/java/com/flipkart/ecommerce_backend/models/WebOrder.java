@@ -11,6 +11,9 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.ArrayList;
 
 @Entity
@@ -23,6 +26,7 @@ public class WebOrder {
 	@Column(name="id",nullable=false)
 	private Long id;
 	
+	@JsonIgnore
 	@ManyToOne(optional=false)
 	@JoinColumn(name="user_id",nullable=false)
 	private LocalUser localUser;

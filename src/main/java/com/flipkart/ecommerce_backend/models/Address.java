@@ -2,6 +2,8 @@ package com.flipkart.ecommerce_backend.models;
 
 import org.springframework.boot.autoconfigure.web.WebProperties.Resources.Chain.Strategy;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -34,6 +36,7 @@ public class Address {
 	@Column(name="country",length=75,nullable=false)
 	private String country;
 	
+	@JsonIgnore
 	@ManyToOne(optional=false)
 	@JoinColumn(name="user_id",nullable=false)
 	private LocalUser localUser;
