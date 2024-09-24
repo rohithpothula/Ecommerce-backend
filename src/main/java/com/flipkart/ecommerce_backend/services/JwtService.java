@@ -40,7 +40,30 @@ public class JwtService {
 				.sign(algorithm);
 	}
 	
+	public String generateEmailJwt(LocalUser localUser) {
+		return JWT.create().withClaim("EMAIL",localUser.getEmail())
+				.withIssuedAt(new Date(System.currentTimeMillis()))
+				.withExpiresAt(new Date(System.currentTimeMillis()+1000*expirySeconds))
+				.withIssuer(jwtIssuer)
+				.sign(algorithm);
+	}
+	
 	public String getUserNameFromToken(String token) {
 		return (String)JWT.decode(token).getClaim("USERNAME").asString();
+	}
+	
+	public String getEmailFromToken(String token) {
+		return JWT.decode(token).getClaim("EMAIL").asString();
+	}
+	
+	public boolean isTokenExpired(String token) {
+		Date expiryDate = JWT.decode(token).getExpiresAt();
+		Date currentDate = new Date(System.currentTimeMillis());
+		if(currentDate.compareTo(expiryDate)>0) {
+			return false;
+		}
+		else {
+			return true;
+		}
 	}
 }
