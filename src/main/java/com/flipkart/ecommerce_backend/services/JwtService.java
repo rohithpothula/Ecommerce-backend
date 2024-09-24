@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTCreator.Builder;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.flipkart.ecommerce_backend.models.LocalUser;
 
 import jakarta.annotation.PostConstruct;
@@ -49,21 +50,23 @@ public class JwtService {
 	}
 	
 	public String getUserNameFromToken(String token) {
-		return (String)JWT.decode(token).getClaim("USERNAME").asString();
+		DecodedJWT jwt = JWT.require(algorithm).build().verify(token);
+		return jwt.getClaim("USERNAME").asString();
 	}
 	
 	public String getEmailFromToken(String token) {
-		return JWT.decode(token).getClaim("EMAIL").asString();
+		DecodedJWT jwt = JWT.require(algorithm).build().verify(token);
+		return jwt.getClaim("EMAIL").asString();
 	}
 	
 	public boolean isTokenExpired(String token) {
 		Date expiryDate = JWT.decode(token).getExpiresAt();
 		Date currentDate = new Date(System.currentTimeMillis());
 		if(currentDate.compareTo(expiryDate)>0) {
-			return false;
+			return true;
 		}
 		else {
-			return true;
+			return false;
 		}
 	}
 }

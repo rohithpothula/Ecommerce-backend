@@ -38,14 +38,19 @@ public class AuthenticationController {
 	private UserService userService;
 	
 	@PostMapping("/registeruser")
-	public ResponseEntity<LocalUser> registerUser(@RequestBody RegistrationBody regestrationBody) throws UserAlreadyExistsException, EmailAlreadyExistsException, MailNotSentException {
+	public ResponseEntity registerUser(@RequestBody RegistrationBody regestrationBody) throws UserAlreadyExistsException, EmailAlreadyExistsException, MailNotSentException {
 		try {
 				LocalUser localuser = userService.registerUser(regestrationBody);
 				return ResponseEntity.ok().build();
-
 		}
 		catch (UserAlreadyExistsException e){
 			return ResponseEntity.status(HttpStatus.CONFLICT).build();
+		}
+		catch (EmailAlreadyExistsException e) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).build();
+		}
+		catch (MailNotSentException e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 	}
 	
@@ -56,9 +61,13 @@ public class AuthenticationController {
 		try {
 			jwt = userService.loginUser(loginbody);
 		}
-		catch (UserNotVerifiedException e){
+		catch (UserNotVerifiedException ex){
 			authenticationResponseBody.setSuccess(false);
-			authenticationResponseBody.setFailureReason("USER_NOT_VERIFIED");
+			String reason = "USER_NOT_VERIFIED";
+			if(ex.isEmailSent()) {
+				reason = reason + "_EMAIL_RESENT";
+			}
+			authenticationResponseBody.setFailureReason(reason);
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(authenticationResponseBody);
 		}
 		catch (MailNotSentException e){
@@ -74,7 +83,7 @@ public class AuthenticationController {
 		else {
 			authenticationResponseBody.setJwtToken(jwt);
 			authenticationResponseBody.setSuccess(true);
-			return new ResponseEntity<>(authenticationResponseBody,HttpStatus.OK); 
+			return new ResponseEntity<>(authenticationResponseBody,HttpStatus.OK);
 		}
 	}
 	
@@ -83,21 +92,43 @@ public class AuthenticationController {
 		return authenticationPrinciple;
 	}
 	
-	public ResponseEntity<VerificationToken> verifyToken(@RequestParam String token) throws VerificationTokenExpiredException, InvalidEmailVerificationTokenException, UserVerificationTokenAlreadyVerifiedException, MailNotSentException{
+	
+	@PostMapping("/verify")
+	public ResponseEntity<VerificationTokenResponseBody> verifyToken(@RequestParam String token) throws VerificationTokenExpiredException, InvalidEmailVerificationTokenException, UserVerificationTokenAlreadyVerifiedException, MailNotSentException{
 		VerificationTokenResponseBody verificationTokenResponseBody = new VerificationTokenResponseBody();
 		boolean verifyEmail=true;
 		try {
 			verifyEmail = userService.verifyToken(token);
+			if(verifyEmail==true) {
+				verificationTokenResponseBody.setSuccess(true);
+				return ResponseEntity.status(HttpStatus.OK).body(verificationTokenResponseBody);
+			}
 		}
 		catch(VerificationTokenExpiredException e) {
+			verificationTokenResponseBody.setSuccess(false);
 			verificationTokenResponseBody.setFailureReason("VERIFICATION TOKEN EXPIRED");
-			
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(verificationTokenResponseBody);
 		}
-		if(verifyEmail==true) {
-			return (ResponseEntity<VerificationToken>) ResponseEntity.status(HttpStatus.OK);
+		catch (MailNotSentException e){
+			verificationTokenResponseBody.setSuccess(false);
+			verificationTokenResponseBody.setFailureReason("INTERNAL_SERVER_ERROR");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(verificationTokenResponseBody);
 		}
-		else {
-			return (ResponseEntity<VerificationToken>) ResponseEntity.status(HttpStatus.BAD_REQUEST);
+		catch (InvalidEmailVerificationTokenException e) {
+			verificationTokenResponseBody.setSuccess(false);
+			verificationTokenResponseBody.setFailureReason("INVALID_VERIFICATION_TOKEN_ERROR");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(verificationTokenResponseBody);
 		}
+		catch (UserVerificationTokenAlreadyVerifiedException e) {
+			verificationTokenResponseBody.setSuccess(false);
+			verificationTokenResponseBody.setFailureReason("USER_VERFICATION_TOKEN_ALREADY_VERIFIFED_ERROR");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(verificationTokenResponseBody); 
+		}
+		catch (Exception e) {
+			verificationTokenResponseBody.setSuccess(false);
+			verificationTokenResponseBody.setFailureReason(e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(verificationTokenResponseBody);
+		}
+		return null;
 	}
 }
