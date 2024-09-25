@@ -22,7 +22,7 @@ public class WebSecurityConfig {
 	  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.csrf().disable().cors().disable();
 		http.addFilterBefore(jwtFilter,UsernamePasswordAuthenticationFilter.class); 
-		http.authorizeHttpRequests().requestMatchers("/api/products","/api/auth/registeruser","/api/auth/login").permitAll()
+		http.authorizeHttpRequests().requestMatchers("/api/products","/api/auth/registeruser","/api/auth/login","/api/auth/verify").permitAll()
 		.anyRequest().authenticated();
 		return http.build();
 	}

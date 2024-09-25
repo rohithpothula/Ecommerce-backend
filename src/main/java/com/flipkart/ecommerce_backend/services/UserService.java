@@ -77,7 +77,7 @@ public class UserService {
 					if(verificationTokenList.size()==0) {
 						resend=true;
 					}
-					if(verificationTokenList.get(0).getCreatedTimestamp().before(new Timestamp(System.currentTimeMillis()-(1000*60*60)))) {
+					else if(verificationTokenList.get(0).getCreatedTimestamp().before(new Timestamp(System.currentTimeMillis()-(1000*60*60)))) {
 						resend=true;
 					}
 					if(resend) {

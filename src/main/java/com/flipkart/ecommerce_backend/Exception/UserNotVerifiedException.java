@@ -8,4 +8,12 @@ public class UserNotVerifiedException extends Exception{
 		this.isEmailSent = isEmailSent;
 	}
 
+	public boolean isEmailSent() {
+		return isEmailSent;
+	}
+
+	public void setEmailSent(boolean isEmailSent) {
+		this.isEmailSent = isEmailSent;
+	}
+
 }
