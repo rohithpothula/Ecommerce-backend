@@ -8,9 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.flipkart.ecommerce_backend.Exception.EmailAlreadyExistsException;
+import com.flipkart.ecommerce_backend.Exception.ForgotPasswordLinkExpiredException;
 import com.flipkart.ecommerce_backend.Exception.InvalidEmailVerificationTokenException;
 import com.flipkart.ecommerce_backend.Exception.InvalidUserCredentialsException;
 import com.flipkart.ecommerce_backend.Exception.MailNotSentException;
+import com.flipkart.ecommerce_backend.Exception.MailNotfoundException;
 import com.flipkart.ecommerce_backend.Exception.UserAlreadyExistsException;
 import com.flipkart.ecommerce_backend.Exception.UserDoesNotExistsException;
 import com.flipkart.ecommerce_backend.Exception.UserNotVerifiedException;
@@ -61,7 +63,8 @@ public class UserService {
 		return localUserRepository.save(localuser);
 	}
 
-	public String loginUser(LoginBody loginBody) throws MailNotSentException, UserNotVerifiedException, UserDoesNotExistsException, InvalidUserCredentialsException {
+	public String loginUser(LoginBody loginBody) throws MailNotSentException, UserNotVerifiedException,
+			UserDoesNotExistsException, InvalidUserCredentialsException {
 		Optional<LocalUser> optionalUser = localUserRepository.findByUsernameIgnoreCase(loginBody.getUsername());
 		if (optionalUser.isPresent()) {
 			LocalUser localUser = optionalUser.get();
@@ -70,17 +73,16 @@ public class UserService {
 			if (iscorrectPassword) {
 				if (localUser.isEmailVerified()) {
 					return jwtService.generateJWT(localUser);
-				}
-				else {
+				} else {
 					List<VerificationToken> verificationTokenList = localUser.getVerificationTokens();
 					boolean resend = false;
-					if(verificationTokenList.size()==0) {
-						resend=true;
+					if (verificationTokenList.size() == 0) {
+						resend = true;
+					} else if (verificationTokenList.get(0).getCreatedTimestamp()
+							.before(new Timestamp(System.currentTimeMillis() - (1000 * 60 * 60)))) {
+						resend = true;
 					}
-					else if(verificationTokenList.get(0).getCreatedTimestamp().before(new Timestamp(System.currentTimeMillis()-(1000*60*60)))) {
-						resend=true;
-					}
-					if(resend) {
+					if (resend) {
 						VerificationToken verificationToken = createVerificationToken(localUser);
 						emailService.sendVerificationMail(verificationToken);
 					}
@@ -106,13 +108,14 @@ public class UserService {
 	}
 
 	public boolean verifyToken(String token)
-			throws VerificationTokenExpiredException, InvalidEmailVerificationTokenException, UserVerificationTokenAlreadyVerifiedException, MailNotSentException {
+			throws VerificationTokenExpiredException, InvalidEmailVerificationTokenException,
+			UserVerificationTokenAlreadyVerifiedException, MailNotSentException {
 		String email = jwtService.getEmailFromToken(token);
 		Optional<LocalUser> optionalUser = localUserRepository.findByEmailIgnoreCase(email);
 		boolean isTokenExpired = jwtService.isTokenExpired(token);
 		if (optionalUser.isPresent()) {
 			LocalUser localUser = optionalUser.get();
-			if(localUser.isEmailVerified()) {
+			if (localUser.isEmailVerified()) {
 				throw new UserVerificationTokenAlreadyVerifiedException();
 			}
 			if (isTokenExpired) {
@@ -124,6 +127,35 @@ public class UserService {
 			localUserRepository.save(localUser);
 			return true;
 		} else {
+			throw new InvalidEmailVerificationTokenException();
+		}
+	}
+	
+	public void forgotPassword(String email) throws MailNotfoundException, MailNotSentException {
+		Optional<LocalUser> opLocalUser = localUserRepository.findByEmailIgnoreCase(email);
+		if(opLocalUser.isPresent()) {
+			LocalUser localUser = opLocalUser.get();
+			String token = jwtService.generatePasswordResetJwt(localUser);
+			emailService.sendPasswordRestVerificationMail(token,localUser);
+		}
+		else {
+			throw new MailNotfoundException();
+		}
+	}
+
+	public void resetPassword(String token, String newPassword) throws InvalidEmailVerificationTokenException, VerificationTokenExpiredException {
+		String email = jwtService.getPasswordResetEmailFromToken(token);
+		Optional<LocalUser> opLocalUser = localUserRepository.findByEmailIgnoreCase(email);
+		if(opLocalUser.isPresent()) {
+			LocalUser localUser = opLocalUser.get();
+			boolean isTokenexpired = jwtService.isTokenExpired(token);
+			if(isTokenexpired) {
+				throw new VerificationTokenExpiredException();
+			}
+			localUser.setPassword(encryptionService.encryptPassword(newPassword));
+			localUserRepository.save(localUser);
+		}
+		else {
 			throw new InvalidEmailVerificationTokenException();
 		}
 	}

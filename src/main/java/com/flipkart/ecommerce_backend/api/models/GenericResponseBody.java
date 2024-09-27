@@ -1,22 +1,24 @@
 package com.flipkart.ecommerce_backend.api.models;
 
-public class VerificationTokenResponseBody {
+public class GenericResponseBody {
 	
-	private boolean success;
+	private boolean Success;
 	
 	private String failureReason;
-	
-	public boolean isSuccess() {
-		return success;
+
+	public boolean getIsSuccess() {
+		return Success;
 	}
-	public void setSuccess(boolean success) {
-		this.success = success;
+
+	public void setIsSuccess(boolean b) {
+		this.Success = b;
 	}
+
 	public String getFailureReason() {
 		return failureReason;
 	}
+
 	public void setFailureReason(String failureReason) {
 		this.failureReason = failureReason;
 	}
-
 }
