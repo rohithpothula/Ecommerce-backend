@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.flipkart.ecommerce_backend.Exception.EmailAlreadyExistsException;
@@ -20,8 +22,10 @@ import com.flipkart.ecommerce_backend.Exception.UserVerificationTokenAlreadyVeri
 import com.flipkart.ecommerce_backend.Exception.VerificationTokenExpiredException;
 import com.flipkart.ecommerce_backend.api.models.LoginBody;
 import com.flipkart.ecommerce_backend.api.models.RegistrationBody;
+import com.flipkart.ecommerce_backend.models.Address;
 import com.flipkart.ecommerce_backend.models.LocalUser;
 import com.flipkart.ecommerce_backend.models.VerificationToken;
+import com.flipkart.ecommerce_backend.models.Repository.AddressRepository;
 import com.flipkart.ecommerce_backend.models.Repository.LocalUserRepository;
 import com.flipkart.ecommerce_backend.models.Repository.VerificationTokenRepository;
 
@@ -42,6 +46,9 @@ public class UserService {
 
 	@Autowired
 	private VerificationTokenRepository verificationTokenRepository;
+	
+	@Autowired
+	private AddressRepository addressRepository;
 
 	public LocalUser registerUser(RegistrationBody registrationBody)
 			throws UserAlreadyExistsException, EmailAlreadyExistsException, MailNotSentException {
@@ -158,5 +165,15 @@ public class UserService {
 		else {
 			throw new InvalidEmailVerificationTokenException();
 		}
+	}
+	
+	public List <Address> getAddress(Long userId){
+		List<Address> address = addressRepository.findByLocalUser_Id(userId);
+		return address;
+	}
+	
+	public Address saveAddress(Address address) {
+		return addressRepository.save(address);
+		
 	}
 }
