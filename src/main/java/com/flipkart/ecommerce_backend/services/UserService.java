@@ -22,6 +22,7 @@ import com.flipkart.ecommerce_backend.Exception.UserVerificationTokenAlreadyVeri
 import com.flipkart.ecommerce_backend.Exception.VerificationTokenExpiredException;
 import com.flipkart.ecommerce_backend.api.models.LoginBody;
 import com.flipkart.ecommerce_backend.api.models.RegistrationBody;
+import com.flipkart.ecommerce_backend.api.models.UpdateUserDto;
 import com.flipkart.ecommerce_backend.models.Address;
 import com.flipkart.ecommerce_backend.models.LocalUser;
 import com.flipkart.ecommerce_backend.models.VerificationToken;
@@ -58,7 +59,7 @@ public class UserService {
 		if (localUserRepository.findByEmailIgnoreCase(registrationBody.getEmail()).isPresent()) {
 			throw new EmailAlreadyExistsException();
 		}
-		LocalUser localuser = new LocalUser();
+		LocalUser localuser = new LocalUser(); 
 		localuser.setUsername(registrationBody.getUser_name());
 		localuser.setPassword(encryptionService.encryptPassword(registrationBody.getPassword()));
 		localuser.setEmail(registrationBody.getEmail());
@@ -101,6 +102,46 @@ public class UserService {
 		} else {
 			throw new UserDoesNotExistsException();
 		}
+	}
+	
+	public LocalUser updateUser(UpdateUserDto updateduser,Long userId) throws UserDoesNotExistsException {
+		Optional<LocalUser> optUser = localUserRepository.findById(userId);
+		if(optUser.isPresent()) {
+			LocalUser local_user = optUser.get();
+			local_user.setUsername(updateduser.getUser_name());
+			local_user.setFirst_name(updateduser.getFirst_name());
+			local_user.setEmail(updateduser.getEmail());
+			local_user.setLast_name(updateduser.getLast_name());
+			localUserRepository.save(local_user);
+			return local_user;
+		}
+		else {
+			throw new UserDoesNotExistsException();
+		}
+	}
+	
+	public LocalUser getUserById(Long id) throws UserDoesNotExistsException {
+		Optional<LocalUser> optUser = localUserRepository.findById(id);
+		if(optUser.isPresent()) {
+			LocalUser localUser = optUser.get();
+			return localUser;
+		}
+		else {
+			throw new UserDoesNotExistsException();
+		}
+	}
+	
+	public List<LocalUser> getAllUsers(){
+		List <LocalUser> allUserList = (List<LocalUser>) localUserRepository.findAll();
+		return allUserList;
+	}
+	
+	public void deleteUser(Long id){
+		Optional<LocalUser> optUser = localUserRepository.findById(id);
+		if(!optUser.isPresent()) {
+			throw new UserDoesNotExistsException();
+		}
+		localUserRepository.deleteById(id);
 	}
 
 	public VerificationToken createVerificationToken(LocalUser localUser) {
