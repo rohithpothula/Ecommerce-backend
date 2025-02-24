@@ -78,6 +78,11 @@ public class AuthenticationController {
 			authenticationResponseBody.setFailureReason("INTERNAL_SERVER_ERROR");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(authenticationResponseBody);
 		}
+		catch (InvalidUserCredentialsException e) {
+			authenticationResponseBody.setIsSuccess(false);
+			authenticationResponseBody.setFailureReason("INVALID_PASSWORD");
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(authenticationResponseBody);
+		}
 		if(jwt==null) {
 			authenticationResponseBody.setIsSuccess(false);
 			authenticationResponseBody.setFailureReason("JWT_TOKEN_SENT_IS_NULL");
@@ -94,7 +99,6 @@ public class AuthenticationController {
 	public LocalUser getLoggedInUserProfile(@AuthenticationPrincipal LocalUser authenticationPrinciple) {
 		return authenticationPrinciple;
 	}
-	
 	
 	@PostMapping("/verify")
 	public ResponseEntity<GenericResponseBody> verifyToken(@RequestParam String token) throws VerificationTokenExpiredException, InvalidEmailVerificationTokenException, UserVerificationTokenAlreadyVerifiedException, MailNotSentException{
