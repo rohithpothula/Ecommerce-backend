@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.flipkart.ecommerce_backend.Constants.ErrorConstants;
 import com.flipkart.ecommerce_backend.Exception.EmailAlreadyExistsException;
 import com.flipkart.ecommerce_backend.Exception.InvalidEmailVerificationTokenException;
 import com.flipkart.ecommerce_backend.Exception.InvalidUserCredentialsException;
@@ -75,8 +76,13 @@ public class AuthenticationController {
 		}
 		catch (MailNotSentException e){
 			authenticationResponseBody.setIsSuccess(false);
-			authenticationResponseBody.setFailureReason("INTERNAL_SERVER_ERROR");
+			authenticationResponseBody.setFailureReason(ErrorConstants.INVALID_PASSWORD);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(authenticationResponseBody);
+		}
+		catch (InvalidUserCredentialsException e) {
+			authenticationResponseBody.setIsSuccess(false);
+			authenticationResponseBody.setFailureReason("INVALID_PASSWORD");
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(authenticationResponseBody);
 		}
 		if(jwt==null) {
 			authenticationResponseBody.setIsSuccess(false);
@@ -94,7 +100,6 @@ public class AuthenticationController {
 	public LocalUser getLoggedInUserProfile(@AuthenticationPrincipal LocalUser authenticationPrinciple) {
 		return authenticationPrinciple;
 	}
-	
 	
 	@PostMapping("/verify")
 	public ResponseEntity<GenericResponseBody> verifyToken(@RequestParam String token) throws VerificationTokenExpiredException, InvalidEmailVerificationTokenException, UserVerificationTokenAlreadyVerifiedException, MailNotSentException{
