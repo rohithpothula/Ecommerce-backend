@@ -1,11 +1,11 @@
 package com.flipkart.ecommerce_backend.api.controllers.auth;
 
+import com.flipkart.ecommerce_backend.api.models.*;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,40 +24,39 @@ import com.flipkart.ecommerce_backend.Exception.UserDoesNotExistsException;
 import com.flipkart.ecommerce_backend.Exception.UserNotVerifiedException;
 import com.flipkart.ecommerce_backend.Exception.UserVerificationTokenAlreadyVerifiedException;
 import com.flipkart.ecommerce_backend.Exception.VerificationTokenExpiredException;
-import com.flipkart.ecommerce_backend.api.models.AuthenticationResponseBody;
-import com.flipkart.ecommerce_backend.api.models.GenericResponseBody;
-import com.flipkart.ecommerce_backend.api.models.LoginBody;
-import com.flipkart.ecommerce_backend.api.models.PasswordResetBody;
-import com.flipkart.ecommerce_backend.api.models.RegistrationBody;
+import com.flipkart.ecommerce_backend.api.models.RegistrationResponse;
 import com.flipkart.ecommerce_backend.models.LocalUser;
-import com.flipkart.ecommerce_backend.models.VerificationToken;
-import com.flipkart.ecommerce_backend.services.JwtService;
 import com.flipkart.ecommerce_backend.services.UserService;
 
 @RestController
 @RequestMapping("api/auth")
 public class AuthenticationController {
-	
+
 	@Autowired
 	private UserService userService;
-	
+
 	@PostMapping("/registeruser")
-	public ResponseEntity registerUser(@RequestBody RegistrationBody regestrationBody) throws UserAlreadyExistsException, EmailAlreadyExistsException, MailNotSentException {
+	public ResponseEntity<RegistrationResponse> registerUser(@Valid @RequestBody RegistrationRequest registrationRequest) throws UserAlreadyExistsException, EmailAlreadyExistsException, MailNotSentException {
 		try {
-				LocalUser localuser = userService.registerUser(regestrationBody);
-				return ResponseEntity.ok().build();
+				LocalUser localuser = userService.registerUser(registrationRequest);
+				RegistrationResponse responseBody = new RegistrationResponse(registrationRequest.getEmail());
+				return ResponseEntity.status(HttpStatus.ACCEPTED).body(responseBody);
 		}
 		catch (UserAlreadyExistsException e){
-			return ResponseEntity.status(HttpStatus.CONFLICT).build();
+			RegistrationResponse registrationResponse = new RegistrationResponse(RegistrationResponse.RegistrationStatus.REGISTRATION_FAILED,"Username already exists.",registrationRequest.getEmail());
+			registrationResponse.setStatus(RegistrationResponse.RegistrationStatus.REGISTRATION_FAILED);
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(registrationResponse);
 		}
 		catch (EmailAlreadyExistsException e) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).build();
+			RegistrationResponse registrationResponse = new RegistrationResponse(RegistrationResponse.RegistrationStatus.REGISTRATION_FAILED,"Email address already registered.",registrationRequest.getEmail());
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(registrationResponse);
 		}
 		catch (MailNotSentException e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+			RegistrationResponse registrationResponse = new RegistrationResponse(RegistrationResponse.RegistrationStatus.REGISTRATION_FAILED,"Internal Server Error.",registrationRequest.getEmail());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(registrationResponse);
 		}
 	}
-	
+
 	@PostMapping("/login")
 	public ResponseEntity<AuthenticationResponseBody> loginUser(@RequestBody LoginBody loginbody) throws MailNotSentException, UserNotVerifiedException, UserDoesNotExistsException, InvalidUserCredentialsException{
 		AuthenticationResponseBody authenticationResponseBody = new AuthenticationResponseBody();
@@ -95,12 +94,12 @@ public class AuthenticationController {
 			return new ResponseEntity<>(authenticationResponseBody,HttpStatus.OK);
 		}
 	}
-	
+
 	@GetMapping("/me")
 	public LocalUser getLoggedInUserProfile(@AuthenticationPrincipal LocalUser authenticationPrinciple) {
 		return authenticationPrinciple;
 	}
-	
+
 	@PostMapping("/verify")
 	public ResponseEntity<GenericResponseBody> verifyToken(@RequestParam String token) throws VerificationTokenExpiredException, InvalidEmailVerificationTokenException, UserVerificationTokenAlreadyVerifiedException, MailNotSentException{
 		GenericResponseBody verificationTokenResponseBody = new GenericResponseBody();
@@ -130,7 +129,7 @@ public class AuthenticationController {
 		catch (UserVerificationTokenAlreadyVerifiedException e) {
 			verificationTokenResponseBody.setIsSuccess(false);
 			verificationTokenResponseBody.setFailureReason("USER_VERFICATION_TOKEN_ALREADY_VERIFIFED_ERROR");
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(verificationTokenResponseBody); 
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(verificationTokenResponseBody);
 		}
 		catch (Exception e) {
 			verificationTokenResponseBody.setIsSuccess(false);
@@ -139,7 +138,7 @@ public class AuthenticationController {
 		}
 		return null;
 	}
-	
+
 	@PostMapping("/reset")
 	public ResponseEntity<GenericResponseBody> resetPassword(@RequestBody PasswordResetBody passwordResetBody) throws InvalidEmailVerificationTokenException, VerificationTokenExpiredException{
 		GenericResponseBody genericResponseBody = new GenericResponseBody();
@@ -160,7 +159,7 @@ public class AuthenticationController {
 			return ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT).body(genericResponseBody);
 		}
 	}
-	
+
 	@PostMapping("/forgotpassword")
 	public ResponseEntity<GenericResponseBody> forgotPassword(@RequestParam String email) throws MailNotfoundException, MailNotSentException {
 		GenericResponseBody forgotPasswordResponseBody = new GenericResponseBody();
