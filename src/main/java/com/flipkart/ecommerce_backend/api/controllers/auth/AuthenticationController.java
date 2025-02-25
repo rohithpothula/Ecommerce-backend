@@ -38,21 +38,18 @@ public class AuthenticationController {
 	@PostMapping("/registeruser")
 	public ResponseEntity<RegistrationResponse> registerUser(@Valid @RequestBody RegistrationRequest registrationRequest) throws UserAlreadyExistsException, EmailAlreadyExistsException, MailNotSentException {
 		try {
-				LocalUser localuser = userService.registerUser(registrationRequest);
-				RegistrationResponse responseBody = new RegistrationResponse(registrationRequest.getEmail());
-				return ResponseEntity.status(HttpStatus.ACCEPTED).body(responseBody);
-		}
-		catch (UserAlreadyExistsException e){
-			RegistrationResponse registrationResponse = new RegistrationResponse(RegistrationResponse.RegistrationStatus.REGISTRATION_FAILED,"Username already exists.",registrationRequest.getEmail());
+			LocalUser localuser = userService.registerUser(registrationRequest);
+			RegistrationResponse responseBody = new RegistrationResponse(registrationRequest.email());
+			return ResponseEntity.status(HttpStatus.ACCEPTED).body(responseBody);
+		} catch (UserAlreadyExistsException e){
+			RegistrationResponse registrationResponse = new RegistrationResponse(RegistrationResponse.RegistrationStatus.REGISTRATION_FAILED,"Username already exists.",registrationRequest.email());
 			registrationResponse.setStatus(RegistrationResponse.RegistrationStatus.REGISTRATION_FAILED);
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(registrationResponse);
-		}
-		catch (EmailAlreadyExistsException e) {
-			RegistrationResponse registrationResponse = new RegistrationResponse(RegistrationResponse.RegistrationStatus.REGISTRATION_FAILED,"Email address already registered.",registrationRequest.getEmail());
+		} catch (EmailAlreadyExistsException e) {
+			RegistrationResponse registrationResponse = new RegistrationResponse(RegistrationResponse.RegistrationStatus.REGISTRATION_FAILED,"Email address already registered.",registrationRequest.email());
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(registrationResponse);
-		}
-		catch (MailNotSentException e) {
-			RegistrationResponse registrationResponse = new RegistrationResponse(RegistrationResponse.RegistrationStatus.REGISTRATION_FAILED,"Internal Server Error.",registrationRequest.getEmail());
+		} catch (MailNotSentException e) {
+			RegistrationResponse registrationResponse = new RegistrationResponse(RegistrationResponse.RegistrationStatus.REGISTRATION_FAILED,"Internal Server Error.",registrationRequest.email());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(registrationResponse);
 		}
 	}
