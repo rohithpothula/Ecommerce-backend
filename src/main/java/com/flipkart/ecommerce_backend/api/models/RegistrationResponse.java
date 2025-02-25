@@ -29,10 +29,4 @@ public class RegistrationResponse {
 		this.message = "Registration successful. Please check your email to verify your account.";
 		this.email = email;
 	}
-
-	public RegistrationResponse(RegistrationStatus status, String email, String message) {
-		this.status = status;
-		this.message = message != null && !message.isEmpty() ? message : "Registration successful. Please check your email to verify your account.";
-		this.email = email;
-	}
 }

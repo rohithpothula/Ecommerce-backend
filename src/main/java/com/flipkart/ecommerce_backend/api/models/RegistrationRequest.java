@@ -12,7 +12,7 @@ public class RegistrationRequest implements Serializable {
 
 	@NonNull
 	@NotBlank(message = "User Name cannot be blank")
-	@Size(min = 3, max = 50, message = "User Name must be between 3 and 20 characters")
+	@Size(min = 3, max = 20, message = "User Name must be between 3 and 20 characters")
 	@Pattern(regexp = "^[a-zA-Z0-9_]+$", message = "User Name can only contain letters, numbers, and underscores")
 	private String user_name;
 
