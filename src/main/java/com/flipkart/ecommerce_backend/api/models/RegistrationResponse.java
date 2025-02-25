@@ -30,8 +30,8 @@ public class RegistrationResponse {
 		this.email = email;
 	}
 
-	public RegistrationResponse(HttpStatus status, String email, String message) {
-		this.status = RegistrationStatus.PENDING_VERIFICATION;
+	public RegistrationResponse(RegistrationStatus status, String email, String message) {
+		this.status = status;
 		this.message = message != null && !message.isEmpty() ? message : "Registration successful. Please check your email to verify your account.";
 		this.email = email;
 	}
