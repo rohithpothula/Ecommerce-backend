@@ -72,18 +72,18 @@ public class AuthenticationControllerTests {
     }
     @Test
     void testRegisterUserShortPasswordFails() {
-        RegistrationRequest request = new RegistrationRequest(uniqueUsername, uniqueEmail, "weak", "First", "Last");
+        RegistrationRequest request = new RegistrationRequest(uniqueUsername, uniqueEmail, "We@k1", "First", "Last");
         ResponseEntity<Map> response = testRestTemplate.postForEntity("/api/auth/registeruser", request, Map.class);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         Map errors = response.getBody();
         assertNotNull(errors);
         assertTrue(errors.containsKey("password"));
-        assertEquals("Password must be between 8 and 100 characters", errors.get("password"));
+        assertEquals("Password is weak,it must contain at least 8 characters, include uppercase, lowercase, numbers, and special characters", errors.get("password"));
     }
     @Test
     void testRegisterUserLongPasswordFails() {
         // 101 characters
-        RegistrationRequest request = new RegistrationRequest(uniqueUsername, uniqueEmail, "b".repeat(101), "First", "Last");
+        RegistrationRequest request = new RegistrationRequest(uniqueUsername, uniqueEmail, "Bbbbb@123".repeat(89), "First", "Last");
         ResponseEntity<Map> response = testRestTemplate.postForEntity("/api/auth/registeruser", request, Map.class);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         Map errors = response.getBody();
@@ -93,8 +93,9 @@ public class AuthenticationControllerTests {
     }
     @Test
     void testRegisterUserExistingUsernameFails() {
-        RegistrationRequest request = new RegistrationRequest("username", uniqueEmail, "password", "First", "Last");
+        RegistrationRequest request = new RegistrationRequest("username", uniqueEmail, "Password@123", "First", "Last");
         ResponseEntity<Map> response = testRestTemplate.postForEntity("/api/auth/registeruser", request, Map.class);
+        System.out.println(response);
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
         Map errors = response.getBody();
         assertNotNull(errors);
@@ -103,7 +104,7 @@ public class AuthenticationControllerTests {
     }
     @Test
     void testRegisterUserExistingEmailFails() {
-        RegistrationRequest request = new RegistrationRequest(uniqueUsername, "abc@gmail.com", "password", "First", "Last");
+        RegistrationRequest request = new RegistrationRequest(uniqueUsername, "abc@gmail.com", "Password@123", "First", "Last");
         ResponseEntity<Map> response = testRestTemplate.postForEntity("/api/auth/registeruser", request, Map.class);
         System.out.println(response);
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
@@ -145,7 +146,7 @@ public class AuthenticationControllerTests {
     }
     @Test
     void testRegisterUserBlankLastNameFails() {
-        RegistrationRequest request = new RegistrationRequest(uniqueUsername, uniqueEmail, "password", "First", "");
+        RegistrationRequest request = new RegistrationRequest(uniqueUsername, uniqueEmail, "Password@123", "First", "");
         ResponseEntity<Map> response = testRestTemplate.postForEntity("/api/auth/registeruser", request, Map.class);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         Map errors = response.getBody();
@@ -155,7 +156,7 @@ public class AuthenticationControllerTests {
     }
     @Test
     void testRegisterUser_success() {
-        RegistrationRequest request = new RegistrationRequest(uniqueUsername, uniqueEmail, "password", "First", "Last");
+        RegistrationRequest request = new RegistrationRequest(uniqueUsername, uniqueEmail, "Password@123", "First", "Last");
         ResponseEntity<Map> response = testRestTemplate.postForEntity("/api/auth/registeruser", request, Map.class);
         System.out.println(response);
         assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
@@ -166,7 +167,7 @@ public class AuthenticationControllerTests {
     }
     @Test
     void testRegisterUser_success_pendingVerification() {
-        RegistrationRequest request = new RegistrationRequest(uniqueUsername, uniqueEmail, "password", "First", "Last");
+        RegistrationRequest request = new RegistrationRequest(uniqueUsername, uniqueEmail, "Password@123", "First", "Last");
         ResponseEntity<Map> response = testRestTemplate.postForEntity("/api/auth/registeruser", request, Map.class);
         assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
         Map body = response.getBody();
@@ -176,7 +177,7 @@ public class AuthenticationControllerTests {
     }
     @Test
     void testRegisterUser_success_message() {
-        RegistrationRequest request = new RegistrationRequest(uniqueUsername, uniqueEmail, "password", "First", "Last");
+        RegistrationRequest request = new RegistrationRequest(uniqueUsername, uniqueEmail, "Password@123", "First", "Last");
         ResponseEntity<Map> response = testRestTemplate.postForEntity("/api/auth/registeruser", request, Map.class);
         assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
         Map body = response.getBody();
@@ -186,12 +187,37 @@ public class AuthenticationControllerTests {
     }
     @Test
     void testRegisterUser_success_email() {
-        RegistrationRequest request = new RegistrationRequest(uniqueUsername, uniqueEmail, "password", "First", "Last");
+        RegistrationRequest request = new RegistrationRequest(uniqueUsername, uniqueEmail, "Password@123", "First", "Last");
         ResponseEntity<Map> response = testRestTemplate.postForEntity("/api/auth/registeruser", request, Map.class);
+        System.out.println(response);
         assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
         Map body = response.getBody();
         assertNotNull(body);
         assertTrue(body.containsKey("email"));
         assertEquals(uniqueEmail, body.get("email"));
+    }
+    @Test
+    void testRegisterUser_success_password() {
+        RegistrationRequest request = new RegistrationRequest(uniqueUsername, uniqueEmail, "Password@123!", "First", "Last");
+        ResponseEntity<Map> response = testRestTemplate.postForEntity("/api/auth/registeruser", request, Map.class);
+        System.out.println(response);
+        assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
+        Map body = response.getBody();
+        assertNotNull(body);
+        assertTrue(body.containsKey("email"));
+        assertEquals(uniqueEmail, body.get("email"));
+        assertTrue(body.containsKey("message"));
+        assertEquals("Registration successful. Please check your email to verify your account.", body.get("message"));
+        assertEquals("PENDING_VERIFICATION", body.get("status"));
+    }
+    @Test
+    void testRegisterUser_success_password_weak() {
+        RegistrationRequest request = new RegistrationRequest(uniqueUsername, uniqueEmail, "password", "First", "Last");
+        ResponseEntity<Map> response = testRestTemplate.postForEntity("/api/auth/registeruser", request, Map.class);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        Map body = response.getBody();
+        assertNotNull(body);
+        assertTrue(body.containsKey("password"));
+        assertEquals("Password is weak,it must contain at least 8 characters, include uppercase, lowercase, numbers, and special characters", body.get("password"));
     }
 }

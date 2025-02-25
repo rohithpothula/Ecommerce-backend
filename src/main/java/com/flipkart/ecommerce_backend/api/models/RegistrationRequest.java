@@ -14,6 +14,8 @@ public record RegistrationRequest(
 
 		@NotBlank(message = "Password cannot be blank")
 		@Size(min = 8, max = 100, message = "Password must be between 8 and 100 characters")
+		@Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{8,}$",
+				message = "Password is weak,it must contain at least 8 characters, include uppercase, lowercase, numbers, and special characters")
 		String password,
 
 		@NotBlank(message = "First Name cannot be blank")
