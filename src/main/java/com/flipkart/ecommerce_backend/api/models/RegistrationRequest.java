@@ -8,7 +8,7 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RegistrationRequest implements Serializable {
+public class RegistrationRequest {
 
 	@NonNull
 	@NotBlank(message = "User Name cannot be blank")
