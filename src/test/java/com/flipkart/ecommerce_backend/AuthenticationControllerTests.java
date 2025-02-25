@@ -14,7 +14,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class AuthenticationControllerTest {
+public class AuthenticationControllerTests {
     @Autowired
     TestRestTemplate testRestTemplate;
     String uniqueUsername = "user_" + UUID.randomUUID().toString().substring(0, 8);
