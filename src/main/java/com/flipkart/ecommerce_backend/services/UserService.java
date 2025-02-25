@@ -53,21 +53,21 @@ public class UserService {
 	@Transactional(rollbackOn = {MailNotSentException.class, UserAlreadyExistsException.class, EmailAlreadyExistsException.class})
 	public LocalUser registerUser(RegistrationRequest registrationRequest)
 			throws UserAlreadyExistsException, EmailAlreadyExistsException, MailNotSentException {
-		if (localUserRepository.findByUsernameIgnoreCase(registrationRequest.getUser_name()).isPresent()) {
+		if (localUserRepository.findByUsernameIgnoreCase(registrationRequest.user_name()).isPresent()) {
 			throw new UserAlreadyExistsException();
 		}
-		if (localUserRepository.findByEmailIgnoreCase(registrationRequest.getEmail()).isPresent()) {
+		if (localUserRepository.findByEmailIgnoreCase(registrationRequest.email()).isPresent()) {
 			throw new EmailAlreadyExistsException();
 		}
 		LocalUser localuser = new LocalUser();
-		localuser.setUsername(registrationRequest.getUser_name());
-		localuser.setPassword(encryptionService.encryptPassword(registrationRequest.getPassword()));
-		localuser.setEmail(registrationRequest.getEmail());
-		localuser.setFirst_name(registrationRequest.getFirst_name());
-		localuser.setLast_name(registrationRequest.getLast_name());
+		localuser.setUsername(registrationRequest.user_name());
+		localuser.setPassword(encryptionService.encryptPassword(registrationRequest.password()));
+		localuser.setEmail(registrationRequest.email());
+		localuser.setFirst_name(registrationRequest.first_name());
+		localuser.setLast_name(registrationRequest.last_name());
 		VerificationToken verificationToken = createVerificationToken(localuser);
 		localUserRepository.save(localuser);
-		emailService.sendVerificationMail(verificationToken);
+//		emailService.sendVerificationMail(verificationToken);
 		verificationTokenRepository.save(verificationToken);
 		return localuser;
 	}
