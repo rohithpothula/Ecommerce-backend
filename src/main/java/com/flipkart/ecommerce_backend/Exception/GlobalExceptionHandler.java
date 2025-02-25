@@ -22,8 +22,11 @@ public class GlobalExceptionHandler {
 		ex.getBindingResult().getAllErrors().forEach(error ->{
 			String fieldName = ((FieldError) error).getField();
 			String errorMessage = error.getDefaultMessage();
-			errors.put(fieldName,errorMessage);
-		});
+			if ("NotBlank".equals(error.getCode())) {
+				errors.put(fieldName, errorMessage); // @NotBlank takes precedence
+			} else if (!errors.containsKey(fieldName)) { // Add only if no higher-priority error exists
+				errors.put(fieldName, errorMessage != null ? errorMessage : "Validation failed");
+			}		});
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
 	}
 
