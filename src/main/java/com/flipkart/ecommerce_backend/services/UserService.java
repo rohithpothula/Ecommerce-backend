@@ -4,13 +4,12 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
+import com.flipkart.ecommerce_backend.api.models.RegistrationRequest;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.flipkart.ecommerce_backend.Exception.EmailAlreadyExistsException;
-import com.flipkart.ecommerce_backend.Exception.ForgotPasswordLinkExpiredException;
 import com.flipkart.ecommerce_backend.Exception.InvalidEmailVerificationTokenException;
 import com.flipkart.ecommerce_backend.Exception.InvalidUserCredentialsException;
 import com.flipkart.ecommerce_backend.Exception.MailNotSentException;
@@ -21,7 +20,7 @@ import com.flipkart.ecommerce_backend.Exception.UserNotVerifiedException;
 import com.flipkart.ecommerce_backend.Exception.UserVerificationTokenAlreadyVerifiedException;
 import com.flipkart.ecommerce_backend.Exception.VerificationTokenExpiredException;
 import com.flipkart.ecommerce_backend.api.models.LoginBody;
-import com.flipkart.ecommerce_backend.api.models.RegistrationBody;
+import com.flipkart.ecommerce_backend.api.models.RegistrationRequest;
 import com.flipkart.ecommerce_backend.api.models.UpdateUserDto;
 import com.flipkart.ecommerce_backend.models.Address;
 import com.flipkart.ecommerce_backend.models.LocalUser;
@@ -47,28 +46,30 @@ public class UserService {
 
 	@Autowired
 	private VerificationTokenRepository verificationTokenRepository;
-	
+
 	@Autowired
 	private AddressRepository addressRepository;
 
-	public LocalUser registerUser(RegistrationBody registrationBody)
+	@Transactional(rollbackOn = {MailNotSentException.class, UserAlreadyExistsException.class, EmailAlreadyExistsException.class})
+	public LocalUser registerUser(RegistrationRequest registrationRequest)
 			throws UserAlreadyExistsException, EmailAlreadyExistsException, MailNotSentException {
-		if (localUserRepository.findByUsernameIgnoreCase(registrationBody.getUser_name()).isPresent()) {
+		if (localUserRepository.findByUsernameIgnoreCase(registrationRequest.user_name()).isPresent()) {
 			throw new UserAlreadyExistsException();
 		}
-		if (localUserRepository.findByEmailIgnoreCase(registrationBody.getEmail()).isPresent()) {
+		if (localUserRepository.findByEmailIgnoreCase(registrationRequest.email()).isPresent()) {
 			throw new EmailAlreadyExistsException();
 		}
-		LocalUser localuser = new LocalUser(); 
-		localuser.setUsername(registrationBody.getUser_name());
-		localuser.setPassword(encryptionService.encryptPassword(registrationBody.getPassword()));
-		localuser.setEmail(registrationBody.getEmail());
-		localuser.setFirst_name(registrationBody.getFirst_name());
-		localuser.setLast_name(registrationBody.getLast_name());
+		LocalUser localuser = new LocalUser();
+		localuser.setUsername(registrationRequest.user_name());
+		localuser.setPassword(encryptionService.encryptPassword(registrationRequest.password()));
+		localuser.setEmail(registrationRequest.email());
+		localuser.setFirst_name(registrationRequest.first_name());
+		localuser.setLast_name(registrationRequest.last_name());
 		VerificationToken verificationToken = createVerificationToken(localuser);
+		localUserRepository.save(localuser);
 		emailService.sendVerificationMail(verificationToken);
 		verificationTokenRepository.save(verificationToken);
-		return localUserRepository.save(localuser);
+		return localuser;
 	}
 
 	public String loginUser(LoginBody loginBody) throws MailNotSentException, UserNotVerifiedException,
@@ -103,7 +104,7 @@ public class UserService {
 			throw new UserDoesNotExistsException();
 		}
 	}
-	
+
 	public LocalUser updateUser(UpdateUserDto updateduser,Long userId) throws UserDoesNotExistsException {
 		Optional<LocalUser> optUser = localUserRepository.findById(userId);
 		if(optUser.isPresent()) {
@@ -119,7 +120,7 @@ public class UserService {
 			throw new UserDoesNotExistsException();
 		}
 	}
-	
+
 	public LocalUser getUserById(Long id) throws UserDoesNotExistsException {
 		Optional<LocalUser> optUser = localUserRepository.findById(id);
 		if(optUser.isPresent()) {
@@ -130,12 +131,12 @@ public class UserService {
 			throw new UserDoesNotExistsException();
 		}
 	}
-	
+
 	public List<LocalUser> getAllUsers(){
 		List <LocalUser> allUserList = (List<LocalUser>) localUserRepository.findAll();
 		return allUserList;
 	}
-	
+
 	public void deleteUser(Long id){
 		Optional<LocalUser> optUser = localUserRepository.findById(id);
 		if(!optUser.isPresent()) {
@@ -150,8 +151,7 @@ public class UserService {
 		verificationToken.setLocalUser(localUser);
 		verificationToken.setCreatedTimestamp(new Timestamp(System.currentTimeMillis()));
 		localUser.getVerificationTokens().add(verificationToken);
-		verificationTokenRepository.save(verificationToken);
-		localUserRepository.save(localUser);
+
 		return verificationToken;
 	}
 
@@ -178,7 +178,7 @@ public class UserService {
 			throw new InvalidEmailVerificationTokenException();
 		}
 	}
-	
+
 	public void forgotPassword(String email) throws MailNotfoundException, MailNotSentException {
 		Optional<LocalUser> opLocalUser = localUserRepository.findByEmailIgnoreCase(email);
 		if(opLocalUser.isPresent()) {
@@ -207,14 +207,14 @@ public class UserService {
 			throw new InvalidEmailVerificationTokenException();
 		}
 	}
-	
+
 	public List <Address> getAddress(Long userId){
 		List<Address> address = addressRepository.findByLocalUser_Id(userId);
 		return address;
 	}
-	
+
 	public Address saveAddress(Address address) {
 		return addressRepository.save(address);
-		
+
 	}
 }
