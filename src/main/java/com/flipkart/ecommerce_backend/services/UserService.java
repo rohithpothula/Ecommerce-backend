@@ -67,7 +67,7 @@ public class UserService {
 		localuser.setLast_name(registrationRequest.last_name());
 		VerificationToken verificationToken = createVerificationToken(localuser);
 		localUserRepository.save(localuser);
-//		emailService.sendVerificationMail(verificationToken);
+		emailService.sendVerificationMail(verificationToken);
 		verificationTokenRepository.save(verificationToken);
 		return localuser;
 	}
