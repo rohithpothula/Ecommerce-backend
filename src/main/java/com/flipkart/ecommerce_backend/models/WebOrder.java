@@ -1,5 +1,6 @@
 package com.flipkart.ecommerce_backend.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,57 +11,51 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import java.util.ArrayList;
-
 @Entity
-@Table(name="weborder")
+@Table(name = "weborder")
 public class WebOrder {
-	
-	
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="id",nullable=false)
-	private Long id;
-	
-	@JsonIgnore
-	@ManyToOne(optional=false)
-	@JoinColumn(name="user_id",nullable=false)
-	private LocalUser localUser;
-	
-	@ManyToOne(optional=false)
-	@JoinColumn(name="address_id",nullable=false)
-	private Address address;
-	
-	@OneToMany(mappedBy = "id",cascade = CascadeType.REMOVE,orphanRemoval = true)
-	private List<WebOrderQuantities> webOrderQuantites = new ArrayList<>();
 
-	public Long getId() {
-		return id;
-	}
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id", nullable = false)
+  private Long id;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+  @JsonIgnore
+  @ManyToOne(optional = false)
+  @JoinColumn(name = "user_id", nullable = false)
+  private LocalUser localUser;
 
-	public LocalUser getLocalUser() {
-		return localUser;
-	}
+  @ManyToOne(optional = false)
+  @JoinColumn(name = "address_id", nullable = false)
+  private Address address;
 
-	public void setLocalUser(LocalUser localUser) {
-		this.localUser = localUser;
-	}
+  @OneToMany(mappedBy = "id", cascade = CascadeType.REMOVE, orphanRemoval = true)
+  private List<WebOrderQuantities> webOrderQuantites = new ArrayList<>();
 
-	public Address getAddress() {
-		return address;
-	}
+  public Long getId() {
+    return id;
+  }
 
-	public void setAddress(Address address) {
-		this.address = address;
-	}
-	
-	
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public LocalUser getLocalUser() {
+    return localUser;
+  }
+
+  public void setLocalUser(LocalUser localUser) {
+    this.localUser = localUser;
+  }
+
+  public Address getAddress() {
+    return address;
+  }
+
+  public void setAddress(Address address) {
+    this.address = address;
+  }
 }

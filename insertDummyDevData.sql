@@ -8,11 +8,11 @@ SET @userId1 =1;
 -- Replace the id here with the second user id you want to have ownership of the orders.
 -- DECLARE @userId2 AS INT = 2;
 SET @userId2 =2;
-DELETE FROM web_order_quantities;
-DELETE FROM web_order;
-DELETE FROM inventory;
-DELETE FROM product;
-DELETE FROM address;
+CREATE TABLE IF NOT EXISTS  web_order_quantities;
+CREATE TABLE IF NOT EXISTS  web_order;
+CREATE TABLE IF NOT EXISTS  inventory;
+CREATE TABLE IF NOT EXISTS  product;
+CREATE TABLE IF NOT EXISTS  address;
 use ecommerce;
 INSERT INTO product (name, short_description, long_description, price)
 VALUES ('Product #1', 'Product short description', 'Product long description', 100.00);
@@ -47,19 +47,19 @@ SELECT id INTO @address2 FROM address WHERE user_id = @userId2 ORDER BY id DESC 
 -- SELECT TOP 1 @address1 = id FROM address WHERE user_id = @userId1 ORDER BY id DESC;
 -- SELECT TOP 1 @address2 = id FROM address WHERE user_id = @userId2 ORDER BY id DESC;
 
-INSERT INTO weborder (address_id, user_id) VALUES (@address1, @userId1);
-INSERT INTO weborder (address_id, user_id) VALUES (@address1, @userId1);
-INSERT INTO weborder (address_id, user_id) VALUES (@address1, @userId1);
-INSERT INTO weborder (address_id, user_id) VALUES (@address2, @userId2);
-INSERT INTO weborder (address_id, user_id) VALUES (@address2, @userId2);
+INSERT INTO web_order (address_id, user_id) VALUES (@address1, @userId1);
+INSERT INTO web_order (address_id, user_id) VALUES (@address1, @userId1);
+INSERT INTO web_order (address_id, user_id) VALUES (@address1, @userId1);
+INSERT INTO web_order (address_id, user_id) VALUES (@address2, @userId2);
+INSERT INTO web_order (address_id, user_id) VALUES (@address2, @userId2);
 
--- DECLARE @order1 INT, @order2 INT, @order3 INT, @order4 INT, @order5 INT; 
+-- DECLARE @order1 INT, @order2 INT, @order3 INT, @order4 INT, @order5 INT;
 
-SELECT id INTO @order1 FROM weborder WHERE address_id = @address1 AND user_id = @userId1 ORDER BY id DESC LIMIT 1;
-SELECT id INTO @order2 FROM weborder WHERE address_id = @address1 AND user_id = @userId1 ORDER BY id DESC LIMIT 1 OFFSET 1;
-SELECT id INTO @order3 FROM weborder WHERE address_id = @address1 AND user_id = @userId1 ORDER BY id DESC LIMIT 1 OFFSET 1;
-SELECT id INTO @order4 FROM weborder WHERE address_id = @address2 AND user_id = @userId2 ORDER BY id DESC LIMIT 1;
-SELECT id INTO @order5 FROM weborder WHERE address_id = @address2 AND user_id = @userId2 ORDER BY id DESC LIMIT 1 OFFSET 1;
+SELECT id INTO @order1 FROM web_order WHERE address_id = @address1 AND user_id = @userId1 ORDER BY id DESC LIMIT 1;
+SELECT id INTO @order2 FROM web_order WHERE address_id = @address1 AND user_id = @userId1 ORDER BY id DESC LIMIT 1 OFFSET 1;
+SELECT id INTO @order3 FROM web_order WHERE address_id = @address1 AND user_id = @userId1 ORDER BY id DESC LIMIT 1 OFFSET 1;
+SELECT id INTO @order4 FROM web_order WHERE address_id = @address2 AND user_id = @userId2 ORDER BY id DESC LIMIT 1;
+SELECT id INTO @order5 FROM web_order WHERE address_id = @address2 AND user_id = @userId2 ORDER BY id DESC LIMIT 1 OFFSET 1;
 
 INSERT INTO web_order_quantities (order_id, product_id, quantity) VALUES (@order1, @product1, 5);
 INSERT INTO web_order_quantities (order_id, product_id, quantity) VALUES (@order1, @product2, 5);

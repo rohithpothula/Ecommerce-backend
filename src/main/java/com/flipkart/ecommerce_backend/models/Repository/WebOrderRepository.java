@@ -1,18 +1,12 @@
 package com.flipkart.ecommerce_backend.models.Repository;
 
-import java.util.List;
-import java.util.Optional;
-
+import com.flipkart.ecommerce_backend.models.LocalUser;
+import com.flipkart.ecommerce_backend.models.WebOrder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.ListCrudRepository;
 
-import com.flipkart.ecommerce_backend.models.LocalUser;
-import com.flipkart.ecommerce_backend.models.WebOrder;
+public interface WebOrderRepository extends JpaRepository<WebOrder, Long> {
 
-public interface WebOrderRepository extends JpaRepository<WebOrder, Long>{
-	
-	Page<WebOrder> findByLocalUser(LocalUser localUser,Pageable pageable);
-
+  Page<WebOrder> findByLocalUser(LocalUser localUser, Pageable pageable);
 }
