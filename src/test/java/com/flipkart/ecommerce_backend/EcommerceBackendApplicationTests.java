@@ -1,26 +1,22 @@
 package com.flipkart.ecommerce_backend;
 
+import com.flipkart.ecommerce_backend.models.Repository.LocalUserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.flipkart.ecommerce_backend.models.Repository.LocalUserRepository;
-
 @SpringBootTest
 class EcommerceBackendApplicationTests {
-	
-	@Autowired
-	private LocalUserRepository localUserRepository;
 
-	@Test
-	void contextLoads() {
-	}
-	
-	@Test
-	public void repoTest() {
-		String className = this.localUserRepository.getClass().getName();
-		String packageName = this.localUserRepository.getClass().getPackageName();
-		System.out.println(className);
-	}
+  @Autowired private LocalUserRepository localUserRepository;
 
+  @Test
+  void contextLoads() {}
+
+  @Test
+  public void repoTest() {
+    String className = this.localUserRepository.getClass().getName();
+    String packageName = this.localUserRepository.getClass().getPackageName();
+    System.out.println(className);
+  }
 }

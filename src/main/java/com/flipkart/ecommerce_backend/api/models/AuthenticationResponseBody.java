@@ -1,15 +1,14 @@
 package com.flipkart.ecommerce_backend.api.models;
 
-public class AuthenticationResponseBody extends GenericResponseBody{
-	
-	private String jwtToken;
+public class AuthenticationResponseBody extends GenericResponseBody {
 
-	public String getJwtToken() {
-		return jwtToken;
-	}
+  private String jwtToken;
 
-	public void setJwtToken(String jwtToken) {
-		this.jwtToken = jwtToken;
-	}
+  public String getJwtToken() {
+    return jwtToken;
+  }
 
+  public void setJwtToken(String jwtToken) {
+    this.jwtToken = jwtToken;
+  }
 }
