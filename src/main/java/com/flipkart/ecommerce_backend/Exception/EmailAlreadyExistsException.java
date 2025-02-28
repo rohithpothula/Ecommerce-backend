@@ -1,5 +1,3 @@
 package com.flipkart.ecommerce_backend.Exception;
 
-public class EmailAlreadyExistsException extends Exception{
-
-}
+public class EmailAlreadyExistsException extends Exception {}
