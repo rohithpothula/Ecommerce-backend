@@ -15,9 +15,10 @@ class EcommerceBackendApplicationTests {
 
   @Test
   public void repoTest() {
-              String className = this.localUserRepository.getClass().getName();
+    String className = this.localUserRepository.getClass().getName();
     String packageName = this.localUserRepository.getClass().getPackageName();
     // for now make test fail
-    //assert (className.equals("com.flipkart.ecommerce_backend.models.Repository.LocalUserRepository"));
+    // assert
+    // (className.equals("com.flipkart.ecommerce_backend.models.Repository.LocalUserRepository"));
   }
 }

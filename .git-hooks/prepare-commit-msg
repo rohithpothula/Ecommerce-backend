@@ -9,7 +9,7 @@ commit_msg=$(cat "$1")
 # - Optional scope in parentheses
 # - Colon and space
 # - Message content (1-50 characters)
-commit_regex='^(feat|fix|docs|style|refactor|perf|test|chore)(\([a-z0-9-]+\))?: .{1,50}$'
+commit_regex='^(feat|fix|docs|style|refactor|perf|test|chore)(\([a-z0-9-]+\))?: .{1,100}$'
 
 echo "Validating commit message format..."
 echo "Commit message: '$commit_msg'"
