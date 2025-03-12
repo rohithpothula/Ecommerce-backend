@@ -7,6 +7,11 @@ import com.flipkart.ecommerce_backend.models.Repository.LocalUserRepository;
 import com.flipkart.ecommerce_backend.services.UserService;
 import java.util.List;
 import java.util.Optional;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +31,15 @@ public class userController {
 
   @Autowired private LocalUserRepository localUserRepository;
 
+  @Operation(
+          summary = "Retrieve user addresses",
+          description = "Fetches all addresses associated with the specified user ID. Requires Bearer token authentication matching the user ID.",
+          security = { @SecurityRequirement(name = "bearer-key") }
+  )
+  @ApiResponses(value = {
+          @ApiResponse(responseCode = "200", description = "Successfully retrieved addresses"),
+          @ApiResponse(responseCode = "403", description = "User is not authorized to access this resource"),
+  })
   @GetMapping("/address/{userId}")
   public ResponseEntity<List<Address>> getAddress(
       @PathVariable Long userId, @AuthenticationPrincipal LocalUser localuser) {
@@ -41,6 +55,15 @@ public class userController {
     }
   }
 
+  @Operation(
+          summary = "Save a new address",
+          description = "Saves a new address for the specified user ID. Requires Bearer token authentication matching the user ID.",
+          security = { @SecurityRequirement(name = "bearer-key") }
+  )
+  @ApiResponses(value = {
+          @ApiResponse(responseCode = "200", description = "Address saved successfully"),
+          @ApiResponse(responseCode = "403", description = "User is not authorized or invalid user ID")
+  })
   @PostMapping("/address/{userId}")
   public ResponseEntity<Address> saveAddress(
       @PathVariable Long userId,

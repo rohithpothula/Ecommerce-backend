@@ -5,6 +5,11 @@ import com.flipkart.ecommerce_backend.models.LocalUser;
 import com.flipkart.ecommerce_backend.models.WebOrder;
 import com.flipkart.ecommerce_backend.services.OrderService;
 import java.util.List;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +23,15 @@ public class OrderController {
 
   @Autowired private OrderService orderService;
 
+  @Operation(
+      summary = "Retrieve orders",
+      description = "Fetches all orders associated with the specified user ID. Requires Bearer token authentication matching the user ID.",
+      security = { @SecurityRequirement(name = "bearer-key") }
+  )
+  @ApiResponses(value = {
+          @ApiResponse(responseCode = "200", description = "Successfully retrieved orders"),
+          @ApiResponse(responseCode = "403", description = "User is not authorized to access this resource"),
+  })
   @GetMapping
   public List<WebOrder> getOrders(
       @AuthenticationPrincipal LocalUser authenticationPrinciple,

@@ -4,6 +4,11 @@ import com.flipkart.ecommerce_backend.Constants.AppConstants;
 import com.flipkart.ecommerce_backend.models.Product;
 import com.flipkart.ecommerce_backend.services.ProductService;
 import java.util.List;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +22,15 @@ public class ProductController {
 
   @Autowired private ProductService productService;
 
+  @Operation(
+      summary = "Retrieve products",
+      description = "Fetches all products. Requires Bearer token authentication.",
+      security = { @SecurityRequirement(name = "bearer-key") }
+  )
+  @ApiResponses(value = {
+          @ApiResponse(responseCode = "200", description = "Successfully retrieved products"),
+          @ApiResponse(responseCode = "403", description = "User is not authorized to access this resource"),
+  })
   @GetMapping
   public List<Product> getProducts(
       @RequestParam(value = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false)
@@ -30,6 +44,13 @@ public class ProductController {
     return productService.getProducts(pageSize, pageNumber, sortBy, sortDir);
   }
 
+@Operation(
+    summary = "Search products",
+    description = "Searches for products by keyword. Requires Bearer token authentication.")
+@ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Successfully retrieved products"),
+        @ApiResponse(responseCode = "403", description = "User is not authorized to access this resource"),
+})
   @GetMapping("search/{keyword}")
   public List<Product> searchProductByKeyword(@PathVariable String keyword) {
     System.out.println("akdf");
