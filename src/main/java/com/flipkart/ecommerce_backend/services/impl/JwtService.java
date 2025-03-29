@@ -1,4 +1,4 @@
-package com.flipkart.ecommerce_backend.services;
+package com.flipkart.ecommerce_backend.services.impl;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;

@@ -2,7 +2,7 @@ package com.flipkart.ecommerce_backend.Filters;
 
 import com.flipkart.ecommerce_backend.models.LocalUser;
 import com.flipkart.ecommerce_backend.models.Repository.LocalUserRepository;
-import com.flipkart.ecommerce_backend.services.JwtService;
+import com.flipkart.ecommerce_backend.services.impl.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

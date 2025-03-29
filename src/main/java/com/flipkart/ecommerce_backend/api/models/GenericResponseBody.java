@@ -1,24 +1,19 @@
 package com.flipkart.ecommerce_backend.api.models;
 
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.Map;
+
+@Getter
+@Setter
 public class GenericResponseBody {
 
-  private boolean Success;
-
+  private boolean success;
+  private String message;
+  private Map<String, Object> details;
+  private String status;
+  private String timestamp;
   private String failureReason;
-
-  public boolean getIsSuccess() {
-    return Success;
-  }
-
-  public void setIsSuccess(boolean b) {
-    this.Success = b;
-  }
-
-  public String getFailureReason() {
-    return failureReason;
-  }
-
-  public void setFailureReason(String failureReason) {
-    this.failureReason = failureReason;
-  }
 }

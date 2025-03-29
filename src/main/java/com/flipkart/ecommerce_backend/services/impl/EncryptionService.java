@@ -1,4 +1,4 @@
-package com.flipkart.ecommerce_backend.services;
+package com.flipkart.ecommerce_backend.services.impl;
 
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,15 +1,12 @@
 package com.flipkart.ecommerce_backend.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import lombok.Data;
 
+import java.time.LocalDateTime;
+
+@Data
 @Entity
 @Table(name = "inventory")
 public class Inventory {
@@ -27,19 +24,16 @@ public class Inventory {
   @Column(name = "quantity", nullable = false)
   private Integer quantity;
 
-  public long getId() {
-    return id;
-  }
+  @Column(name = "reserved_quantity", nullable = false)
+  private Integer reservedQuantity;
 
-  public void setId(long id) {
-    this.id = id;
-  }
+  @Column(name = "threshold", nullable = false)
+  private Integer threshold;
 
-  public Product getProduct() {
-    return product;
-  }
+  @Column(name = "last_updated", nullable = false)
+  private LocalDateTime lastUpdated;
 
-  public void setProduct(Product product) {
-    this.product = product;
-  }
+  @Enumerated(EnumType.STRING)
+  @Column(name = "status", nullable = false)
+  private InventoryStatus status;
 }

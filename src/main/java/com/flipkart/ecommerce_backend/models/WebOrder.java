@@ -11,9 +11,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.Data;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Data
 @Entity
 @Table(name = "web_order")
 public class WebOrder {
@@ -34,28 +37,4 @@ public class WebOrder {
 
   @OneToMany(mappedBy = "id", cascade = CascadeType.REMOVE, orphanRemoval = true)
   private List<WebOrderQuantities> webOrderQuantites = new ArrayList<>();
-
-  public Long getId() {
-    return id;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public LocalUser getLocalUser() {
-    return localUser;
-  }
-
-  public void setLocalUser(LocalUser localUser) {
-    this.localUser = localUser;
-  }
-
-  public Address getAddress() {
-    return address;
-  }
-
-  public void setAddress(Address address) {
-    this.address = address;
-  }
 }

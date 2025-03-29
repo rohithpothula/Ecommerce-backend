@@ -1,21 +1,12 @@
 package com.flipkart.ecommerce_backend.api.controllers.auth;
 
-import com.flipkart.ecommerce_backend.Constants.ErrorConstants;
-import com.flipkart.ecommerce_backend.Exception.EmailAlreadyExistsException;
-import com.flipkart.ecommerce_backend.Exception.InvalidEmailVerificationTokenException;
-import com.flipkart.ecommerce_backend.Exception.InvalidUserCredentialsException;
-import com.flipkart.ecommerce_backend.Exception.MailNotSentException;
-import com.flipkart.ecommerce_backend.Exception.MailNotfoundException;
-import com.flipkart.ecommerce_backend.Exception.UserAlreadyExistsException;
-import com.flipkart.ecommerce_backend.Exception.UserDoesNotExistsException;
-import com.flipkart.ecommerce_backend.Exception.UserNotVerifiedException;
-import com.flipkart.ecommerce_backend.Exception.UserVerificationTokenAlreadyVerifiedException;
-import com.flipkart.ecommerce_backend.Exception.VerificationTokenExpiredException;
+import com.flipkart.ecommerce_backend.Exception.*;
 import com.flipkart.ecommerce_backend.api.models.*;
 import com.flipkart.ecommerce_backend.api.models.RegistrationResponse;
 import com.flipkart.ecommerce_backend.models.LocalUser;
-import com.flipkart.ecommerce_backend.services.UserService;
+import com.flipkart.ecommerce_backend.services.impl.UserService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +18,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+
+@Slf4j
 @RestController
 @RequestMapping("api/auth")
 public class AuthenticationController {
@@ -34,169 +30,94 @@ public class AuthenticationController {
   @Autowired private UserService userService;
 
   @PostMapping("/registeruser")
-  public ResponseEntity<RegistrationResponse> registerUser(
-      @Valid @RequestBody RegistrationRequest registrationRequest)
-      throws UserAlreadyExistsException, EmailAlreadyExistsException, MailNotSentException {
-    try {
-      LocalUser localuser = userService.registerUser(registrationRequest);
-      RegistrationResponse responseBody = new RegistrationResponse(registrationRequest.email());
-      return ResponseEntity.status(HttpStatus.ACCEPTED).body(responseBody);
-    } catch (UserAlreadyExistsException e) {
-      RegistrationResponse registrationResponse =
-          new RegistrationResponse(
-              RegistrationResponse.RegistrationStatus.REGISTRATION_FAILED,
-              "Username already exists.",
-              registrationRequest.email());
-      registrationResponse.setStatus(RegistrationResponse.RegistrationStatus.REGISTRATION_FAILED);
-      return ResponseEntity.status(HttpStatus.CONFLICT).body(registrationResponse);
-    } catch (EmailAlreadyExistsException e) {
-      RegistrationResponse registrationResponse =
-          new RegistrationResponse(
-              RegistrationResponse.RegistrationStatus.REGISTRATION_FAILED,
-              "Email address already registered.",
-              registrationRequest.email());
-      return ResponseEntity.status(HttpStatus.CONFLICT).body(registrationResponse);
-    } catch (MailNotSentException e) {
-      RegistrationResponse registrationResponse =
-          new RegistrationResponse(
-              RegistrationResponse.RegistrationStatus.REGISTRATION_FAILED,
-              "Internal Server Error.",
-              registrationRequest.email());
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(registrationResponse);
-    }
+  public ResponseEntity<RegistrationResponse> registerUser(@Valid @RequestBody RegistrationRequest registrationRequest) {
+    log.debug("Processing registration request for email: {}", registrationRequest.email());
+
+    LocalUser localUser = userService.registerUser(registrationRequest);
+    RegistrationResponse response = new RegistrationResponse(registrationRequest.email());
+
+    log.info("Successfully registered user with email: {}", registrationRequest.email());
+    return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
   }
 
   @PostMapping("/login")
-  public ResponseEntity<AuthenticationResponseBody> loginUser(@RequestBody LoginBody loginbody)
-      throws MailNotSentException,
-          UserNotVerifiedException,
-          UserDoesNotExistsException,
-          InvalidUserCredentialsException {
-    AuthenticationResponseBody authenticationResponseBody = new AuthenticationResponseBody();
-    String jwt = null;
-    try {
-      jwt = userService.loginUser(loginbody);
-    } catch (UserNotVerifiedException ex) {
-      authenticationResponseBody.setIsSuccess(false);
-      String reason = "USER_NOT_VERIFIED";
-      if (ex.isEmailSent()) {
-        reason = reason + "_EMAIL_RESENT";
-      }
-      authenticationResponseBody.setFailureReason(reason);
-      return ResponseEntity.status(HttpStatus.FORBIDDEN).body(authenticationResponseBody);
-    } catch (MailNotSentException e) {
-      authenticationResponseBody.setIsSuccess(false);
-      authenticationResponseBody.setFailureReason(ErrorConstants.INVALID_PASSWORD);
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body(authenticationResponseBody);
-    } catch (InvalidUserCredentialsException e) {
-      authenticationResponseBody.setIsSuccess(false);
-      authenticationResponseBody.setFailureReason("INVALID_PASSWORD");
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(authenticationResponseBody);
-    }
-    if (jwt == null) {
-      authenticationResponseBody.setIsSuccess(false);
-      authenticationResponseBody.setFailureReason("JWT_TOKEN_SENT_IS_NULL");
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(authenticationResponseBody);
-    } else {
-      authenticationResponseBody.setJwtToken(jwt);
-      authenticationResponseBody.setIsSuccess(true);
-      return new ResponseEntity<>(authenticationResponseBody, HttpStatus.OK);
-    }
+  public ResponseEntity<LoginResponse> loginUser(@Valid @RequestBody LoginBody loginBody) {
+    log.debug("Processing login request for username: {}", loginBody.username());
+
+    String jwt = userService.loginUser(loginBody);
+    LocalUser user = userService.findUserByUsername(loginBody.username());
+    LoginResponse response = LoginResponse.of(jwt, user);
+
+    log.info("Successfully logged in user: {}", loginBody.username());
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/me")
-  public LocalUser getLoggedInUserProfile(
-      @AuthenticationPrincipal LocalUser authenticationPrinciple) {
-    return authenticationPrinciple;
+  public LocalUser getLoggedInUserProfile(@AuthenticationPrincipal LocalUser user) {
+    if (user == null) {
+      throw new UnauthorizedAccessException("User not authenticated");
+    }
+    return user;
   }
 
   @PostMapping("/verify")
-  public ResponseEntity<GenericResponseBody> verifyToken(@RequestParam String token)
-      throws VerificationTokenExpiredException,
-          InvalidEmailVerificationTokenException,
-          UserVerificationTokenAlreadyVerifiedException,
-          MailNotSentException {
-    GenericResponseBody verificationTokenResponseBody = new GenericResponseBody();
-    boolean verifyEmail = true;
-    try {
-      verifyEmail = userService.verifyToken(token);
-      if (verifyEmail == true) {
-        verificationTokenResponseBody.setIsSuccess(true);
-        return ResponseEntity.status(HttpStatus.OK).body(verificationTokenResponseBody);
-      }
-    } catch (VerificationTokenExpiredException e) {
-      verificationTokenResponseBody.setIsSuccess(false);
-      verificationTokenResponseBody.setFailureReason("VERIFICATION TOKEN EXPIRED");
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(verificationTokenResponseBody);
-    } catch (MailNotSentException e) {
-      verificationTokenResponseBody.setIsSuccess(false);
-      verificationTokenResponseBody.setFailureReason("INTERNAL_SERVER_ERROR");
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body(verificationTokenResponseBody);
-    } catch (InvalidEmailVerificationTokenException e) {
-      verificationTokenResponseBody.setIsSuccess(false);
-      verificationTokenResponseBody.setFailureReason("INVALID_VERIFICATION_TOKEN_ERROR");
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(verificationTokenResponseBody);
-    } catch (UserVerificationTokenAlreadyVerifiedException e) {
-      verificationTokenResponseBody.setIsSuccess(false);
-      verificationTokenResponseBody.setFailureReason(
-          "USER_VERFICATION_TOKEN_ALREADY_VERIFIFED_ERROR");
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(verificationTokenResponseBody);
-    } catch (Exception e) {
-      verificationTokenResponseBody.setIsSuccess(false);
-      verificationTokenResponseBody.setFailureReason(e.getMessage());
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body(verificationTokenResponseBody);
+  public ResponseEntity<SuccessResponse> verifyToken(@RequestParam String token) {
+    log.debug("Processing token verification request");
+
+    boolean verified = userService.verifyToken(token);
+
+    if (verified) {
+      SuccessResponse response = SuccessResponse.of("Email successfully verified");
+      log.info("Successfully verified token");
+      return ResponseEntity.ok(response);
+    } else {
+      throw new TokenVerificationException("Token verification failed unexpectedly");
     }
-    return null;
   }
 
   @PostMapping("/reset")
-  public ResponseEntity<GenericResponseBody> resetPassword(
-      @RequestBody PasswordResetBody passwordResetBody)
-      throws InvalidEmailVerificationTokenException, VerificationTokenExpiredException {
-    GenericResponseBody genericResponseBody = new GenericResponseBody();
-    try {
-      userService.resetPassword(passwordResetBody.getToken(), passwordResetBody.getNewPassword());
-      genericResponseBody.setIsSuccess(true);
-      genericResponseBody.setFailureReason(null);
-      return ResponseEntity.status(HttpStatus.OK).body(genericResponseBody);
-    } catch (InvalidEmailVerificationTokenException e) {
-      genericResponseBody.setFailureReason("Invalid token has been received");
-      genericResponseBody.setIsSuccess(false);
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(genericResponseBody);
-    } catch (VerificationTokenExpiredException e) {
-      genericResponseBody.setFailureReason("TOKEN_HAS_BEEN_EXPIRED");
-      genericResponseBody.setIsSuccess(false);
-      return ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT).body(genericResponseBody);
-    }
+  public ResponseEntity<GenericResponseBody> resetPassword(@Valid @RequestBody PasswordResetBody passwordResetBody) {
+    log.debug("Processing password reset request");
+
+    // Call service to reset password and get user email
+    String userEmail = userService.resetPassword(passwordResetBody.getToken(), passwordResetBody.getNewPassword());
+
+    GenericResponseBody response = new GenericResponseBody();
+    response.setSuccess(true);
+    response.setMessage("Password has been successfully reset");
+    response.setStatus("PASSWORD_RESET_SUCCESSFUL");
+    response.setTimestamp(LocalDateTime.now().toString());
+
+    Map<String, Object> details = new HashMap<>();
+    details.put("email", userEmail);
+    details.put("lastUpdated", LocalDateTime.now().toString());
+    details.put("nextStep", "You can now login with your new password");
+    response.setDetails(details);
+
+    log.info("Successfully reset password for user: {}", userEmail);
+    return ResponseEntity.ok(response);
   }
 
   @PostMapping("/forgotpassword")
-  public ResponseEntity<GenericResponseBody> forgotPassword(@RequestParam String email)
-      throws MailNotfoundException, MailNotSentException {
-    GenericResponseBody forgotPasswordResponseBody = new GenericResponseBody();
-    try {
-      userService.forgotPassword(email);
-      forgotPasswordResponseBody.setIsSuccess(true);
-      forgotPasswordResponseBody.setFailureReason(null);
-      return ResponseEntity.status(HttpStatus.OK).body(forgotPasswordResponseBody);
-    } catch (MailNotfoundException e) {
-      forgotPasswordResponseBody.setIsSuccess(false);
-      forgotPasswordResponseBody.setFailureReason(
-          "INVALID_EMAIL_RECEIVED OR EMAIL IS NOT REGISTERED");
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(forgotPasswordResponseBody);
-    } catch (MailNotSentException e) {
-      forgotPasswordResponseBody.setIsSuccess(false);
-      forgotPasswordResponseBody.setFailureReason("PASSWORD_RESENT_MAIL_NOT_SENT");
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body(forgotPasswordResponseBody);
-    } catch (Exception e) {
-      forgotPasswordResponseBody.setIsSuccess(false);
-      forgotPasswordResponseBody.setFailureReason("INTERNAL_SERVER_ERROR");
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body(forgotPasswordResponseBody);
-    }
+  public ResponseEntity<GenericResponseBody> forgotPassword(@RequestParam String email) {
+    log.debug("Processing forgot password request for email: {}", email);
+
+    userService.forgotPassword(email);
+
+    GenericResponseBody response = new GenericResponseBody();
+    response.setSuccess(true);
+    response.setMessage("Password reset link has been sent to your email");
+    response.setStatus("PENDING_EMAIL_VERIFICATION");
+    response.setTimestamp(LocalDateTime.now().toString());
+
+    Map<String, Object> details = new HashMap<>();
+    details.put("email", email);
+    details.put("expirationTime", "30 minutes");
+    details.put("nextSteps", "Please check your email and follow the instructions to reset your password");
+    response.setDetails(details);
+
+    log.info("Successfully processed forgot password request for email: {}", email);
+    return ResponseEntity.ok(response);
   }
+
 }

@@ -28,6 +28,7 @@ public class WebSecurityConfig {
             "/api/auth/login",
             "/api/auth/verify",
             "/api/auth/forgotpassword",
+            "/api/auth/reset",
             "/api-docs./**",
             "/swagger-ui/**",
             "/v3/api-docs/**")

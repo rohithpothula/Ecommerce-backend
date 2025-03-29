@@ -1,24 +1,11 @@
 package com.flipkart.ecommerce_backend.api.models;
 
-public class LoginBody {
+import jakarta.validation.constraints.NotBlank;
 
-  private String username;
+public record LoginBody (
+  @NotBlank(message = "Username cannot be blank")
+  String username,
 
-  private String password;
-
-  public String getUsername() {
-    return username;
-  }
-
-  public void setUsername(String username) {
-    this.username = username;
-  }
-
-  public String getPassword() {
-    return password;
-  }
-
-  public void setPassword(String password) {
-    this.password = password;
-  }
-}
+  @NotBlank(message = "Password cannot be blank")
+  String password
+) {}

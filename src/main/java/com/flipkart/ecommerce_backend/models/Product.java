@@ -1,14 +1,11 @@
 package com.flipkart.ecommerce_backend.models;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import lombok.Data;
 
+import java.time.LocalDateTime;
+
+@Data
 @Entity
 @Table(name = "product")
 public class Product {
@@ -30,6 +27,28 @@ public class Product {
   @Column(name = "price")
   private Double price;
 
+  @Column(name = "category")
+  private String category;
+
+  @Column(name = "brand")
+  private String brand;
+
+  @Column(name = "image_url")
+  private String imageUrl;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "status", nullable = false)
+  private ProductStatus status;
+
+  @Column(name = "created_at", nullable = false, updatable = false)
+  private LocalDateTime createdAt;
+
+  @Column(name = "updated_at")
+  private LocalDateTime updatedAt;
+
+  @Column(name = "deleted_at")
+  private LocalDateTime deletedAt;
+
   @OneToOne(
       mappedBy = "product",
       cascade = CascadeType.REMOVE,
@@ -37,51 +56,4 @@ public class Product {
       orphanRemoval = true)
   private Inventory inventory;
 
-  public Long getId() {
-    return id;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public String getShortDescription() {
-    return shortDescription;
-  }
-
-  public void setShortDescription(String shortDescription) {
-    this.shortDescription = shortDescription;
-  }
-
-  public String getLongDescription() {
-    return longDescription;
-  }
-
-  public void setLongDescription(String longDescription) {
-    this.longDescription = longDescription;
-  }
-
-  public Double getPrice() {
-    return price;
-  }
-
-  public void setPrice(Double price) {
-    this.price = price;
-  }
-
-  public Inventory getInventory() {
-    return inventory;
-  }
-
-  public void setInventory(Inventory inventory) {
-    this.inventory = inventory;
-  }
 }

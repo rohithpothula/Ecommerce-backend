@@ -1,0 +1,872 @@
+{
+	"info": {
+		"_postman_id": "04b4a29c-b082-4384-8193-ce4347decd25",
+		"name": "E-commerce Backend API",
+		"description": "API collection for the e-commerce backend application",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "18347885"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Check response status",
+									"pm.test(\"Status code is 202 Accepted\", () => {",
+									"    pm.response.to.have.status(202);",
+									"});",
+									"",
+									"// Validate response structure",
+									"pm.test(\"Response has correct structure\", () => {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('email');",
+									"    pm.expect(jsonData.email).to.be.a('string');",
+									"});",
+									"",
+									"// Validate email format",
+									"pm.test(\"Email is in valid format\", () => {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.email).to.match(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/);",
+									"});",
+									"",
+									"// Save email for future requests",
+									"if (pm.response.code === 202) {",
+									"    pm.environment.set('userEmail', pm.response.json().email);",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Check if token exists and add to headers",
+									"if (pm.environment.get('authToken')) {",
+									"    pm.request.headers.add({",
+									"        key: 'Authorization',",
+									"        value: 'Bearer ' + pm.environment.get('authToken')",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_name\": \"testuser\",\n    \"email\": \"test@example.com\",\n    \"password\": \"Test@123\",\n    \"first_name\": \"John\",\n    \"last_name\": \"Doe\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/registeruser",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"registeruser"
+							]
+						},
+						"description": "Register a new user with email verification"
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Check response status",
+									"pm.test(\"Status code is 200 OK\", () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Validate response structure",
+									"pm.test(\"Response has JWT token\", () => {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('token');",
+									"    pm.expect(jsonData.token).to.be.a('string'); // Fixed token property name",
+									"});",
+									"",
+									"pm.test(\"Response has user details\", () => {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('userInfo'); // Fixed property name",
+									"    pm.expect(jsonData.userInfo).to.have.property('id'); // Fixed property name",
+									"    pm.expect(jsonData.userInfo).to.have.property('email'); // Fixed property name",
+									"});",
+									"",
+									"// Save token and user ID",
+									"if (pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set('authToken', jsonData.token); // Fixed property name",
+									"    pm.environment.set('userId', jsonData.userInfo.id); // Fixed property name",
+									"}",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Check if token exists and add to headers",
+									"if (pm.environment.get('authToken')) {",
+									"    pm.request.headers.add({",
+									"        key: 'Authorization',",
+									"        value: 'Bearer ' + pm.environment.get('authToken')",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"testuser\",\n    \"password\": \"Test@123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Authenticate user and get JWT token"
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Profile",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Check response status",
+									"pm.test(\"Status code is 200 OK\", () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Validate user object structure",
+									"pm.test(\"Response has valid user structure\", () => {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    pm.expect(jsonData).to.have.property('email');",
+									"    pm.expect(jsonData).to.have.property('username');",
+									"    pm.expect(jsonData).to.have.property('firstName');",
+									"    pm.expect(jsonData).to.have.property('lastName');",
+									"});",
+									"",
+									"// Verify user ID matches",
+									"pm.test(\"User ID matches stored ID\", () => {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.id).to.equal(pm.environment.get('userId'));",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Check if token exists and add to headers",
+									"if (pm.environment.get('authToken')) {",
+									"    pm.request.headers.add({",
+									"        key: 'Authorization',",
+									"        value: 'Bearer ' + pm.environment.get('authToken')",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/me",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"me"
+							],
+							"query": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJVU0VSTkFNRV9LRVkiOiJ0ZXN0dXNlciIsImlzcyI6IkVjb21tZXJjZSIsImV4cCI6MTc0Mzc4MzgxNywiaWF0IjoxNzQzMTc5MDE3fQ.TRjAnA2ZH89l_JKxIoH3teztxryN7o-__H-wGSuge9g",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Get authenticated user's profile"
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Check response status",
+									"pm.test(\"Status code is 200 OK\", () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Validate success response",
+									"pm.test(\"Response indicates successful verification\", () => {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"    pm.expect(jsonData.message).to.equal('Email successfully verified');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Check if token exists and add to headers",
+									"if (pm.environment.get('authToken')) {",
+									"    pm.request.headers.add({",
+									"        key: 'Authorization',",
+									"        value: 'Bearer ' + pm.environment.get('authToken')",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/verify?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJFY29tbWVyY2UiLCJleHAiOjE3NDM3ODM1MTksImlhdCI6MTc0MzE3ODcxOSwiRU1BSUxfVkVSSUZJQ0FUSU9OX0tFWSI6InRlc3RAZXhhbXBsZS5jb20ifQ.HfydcZ6qWz7G0T9KXwL0qLh5uwci8L5qftDGEogVZ4Y",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"verify"
+							],
+							"query": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJFY29tbWVyY2UiLCJleHAiOjE3NDM3ODM1MTksImlhdCI6MTc0MzE3ODcxOSwiRU1BSUxfVkVSSUZJQ0FUSU9OX0tFWSI6InRlc3RAZXhhbXBsZS5jb20ifQ.HfydcZ6qWz7G0T9KXwL0qLh5uwci8L5qftDGEogVZ4Y"
+								}
+							]
+						},
+						"description": "Verify user's email with token"
+					},
+					"response": []
+				}
+			],
+			"description": "User authentication and registration endpoints"
+		},
+		{
+			"name": "User Management",
+			"item": [
+				{
+					"name": "Get User Addresses",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Check response status",
+									"pm.test(\"Status code is 200 OK\", () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Validate response is an array",
+									"pm.test(\"Response is an array\", () => {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.details.addresses).to.be.an('array');",
+									"});",
+									"",
+									"// Validate address structure if array is not empty",
+									"pm.test(\"Address objects have correct structure\", () => {",
+									"    const jsonData = pm.response.json();",
+									"    console.log(jsonData);",
+									"    if (jsonData.length > 0) {",
+									"        pm.expect(jsonData.details.addresses[0]).to.have.property('id');",
+									"        pm.expect(jsonData.details.addresses[0]).to.have.property('addressLine1');",
+									"        pm.expect(jsonData.details.addresses[0]).to.have.property('city');",
+									"        pm.expect(jsonData.details.addresses[0]).to.have.property('country');",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/user/address/{{userId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user",
+								"address",
+								"{{userId}}"
+							]
+						},
+						"description": "Get all addresses for a user"
+					},
+					"response": []
+				},
+				{
+					"name": "Add Address",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Check response status",
+									"pm.test(\"Status code is 200 OK\", () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Validate address structure",
+									"pm.test(\"Response has valid address structure\", () => {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    pm.expect(jsonData).to.have.property('addressLine1');",
+									"    pm.expect(jsonData).to.have.property('city');",
+									"    pm.expect(jsonData).to.have.property('country');",
+									"});",
+									"",
+									"// Verify address details match request",
+									"pm.test(\"Address details match request\", () => {",
+									"    const jsonData = pm.response.json();",
+									"    const requestData = JSON.parse(pm.request.body.raw);",
+									"    ",
+									"    pm.expect(jsonData.addressLine1).to.equal(requestData.addressLine1);",
+									"    pm.expect(jsonData.city).to.equal(requestData.city);",
+									"    pm.expect(jsonData.country).to.equal(requestData.country);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"addressLine1\": \"123 Main St\",\n    \"addressLine2\": \"Apt 4B\",\n    \"city\": \"New York\",\n    \"country\": \"USA\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/user/address/{{userId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user",
+								"address",
+								"{{userId}}"
+							]
+						},
+						"description": "Add a new address for a user"
+					},
+					"response": []
+				}
+			],
+			"description": "User profile and address management"
+		},
+		{
+			"name": "Password Management",
+			"item": [
+				{
+					"name": "Forgot Password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Check response status",
+									"pm.test(\"Status code is 200 OK\", () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Validate success response",
+									"pm.test(\"Response indicates successful request\", () => {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('success');",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/forgotpassword?email={{email}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"forgotpassword"
+							],
+							"query": [
+								{
+									"key": "email",
+									"value": "{{email}}"
+								}
+							]
+						},
+						"description": "Request password reset link"
+					},
+					"response": []
+				},
+				{
+					"name": "Reset Password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Check response status",
+									"pm.test(\"Status code is 200 OK\", () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Validate success response",
+									"pm.test(\"Response indicates successful password reset\", () => {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('success');",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"token\": \"{{reset_token}}\",\n    \"newPassword\": \"NewTest@123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/reset",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"reset"
+							],
+							"query": [
+								{
+									"key": "token",
+									"value": "{{reset_token}}",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Reset password with token"
+					},
+					"response": []
+				}
+			],
+			"description": "Password reset and recovery"
+		},
+		{
+			"name": "Product Mangement",
+			"item": [
+				{
+				"name": "Add Product",
+				"request": {
+					"method": "POST",
+					"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+					],
+					"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Sample Product\",\n  \"shortDescription\": \"Short description of the product\",\n  \"longDescription\": \"Detailed description of the product\",\n  \"price\": 100.0,\n  \"category\": \"Electronics\",\n  \"brand\": \"BrandName\",\n  \"imageUrl\": \"http://example.com/image.jpg\"\n}"
+					},
+					"url": {
+					"raw": "{{baseUrl}}/api/products",
+					"host": ["{{baseUrl}}"],
+					"path": ["api", "products"]
+					},
+					"description": "Add a new product to the catalog."
+				}
+				},
+				{
+				"name": "Get Product by ID",
+				"request": {
+					"method": "GET",
+					"url": {
+					"raw": "{{baseUrl}}/api/products/{{id}}",
+					"host": ["{{baseUrl}}"],
+					"path": ["api", "products", "{{id}}"]
+					},
+					"description": "Retrieve a product by its ID."
+				}
+				},
+				{
+				"name": "Delete Product",
+				"request": {
+					"method": "DELETE",
+					"url": {
+					"raw": "{{baseUrl}}/api/products/{{id}}",
+					"host": ["{{baseUrl}}"],
+					"path": ["api", "products", "{{id}}"]
+					},
+					"description": "Delete a product by its ID."
+				}
+				},
+				{
+				"name": "Update Product",
+				"request": {
+					"method": "PUT",
+					"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+					],
+					"body": {
+					"mode": "raw",
+					"raw": "{\n  \"shortDescription\": \"Updated short description\",\n  \"longDescription\": \"Updated long description\",\n  \"price\": 120.0,\n  \"category\": \"Updated Category\",\n  \"brand\": \"Updated Brand\",\n  \"imageUrl\": \"http://example.com/updated-image.jpg\"\n}"
+					},
+					"url": {
+					"raw": "{{baseUrl}}/api/products/{{id}}",
+					"host": ["{{baseUrl}}"],
+					"path": ["api", "products", "{{id}}"]
+					},
+					"description": "Update an existing product by its ID."
+				}
+				},
+				{
+				"name": "Get All Products",
+				"request": {
+					"method": "GET",
+					"url": {
+					"raw": "{{baseUrl}}/api/products",
+					"host": ["{{baseUrl}}"],
+					"path": ["api", "products"],
+					"query": [
+						{
+						"key": "pageNumber",
+						"value": "0"
+						},
+						{
+						"key": "pageSize",
+						"value": "10"
+						},
+						{
+						"key": "sortBy",
+						"value": "name"
+						},
+						{
+						"key": "sortDir",
+						"value": "asc"
+						}
+					]
+					},
+					"description": "Retrieve all products with pagination and sorting."
+				}
+				}
+			],
+			"description": "Product creation, retrieval, update, and deletion"
+		},
+		{
+			"name": "Product Search & Filtering",
+			"item": [
+				{
+				  "name": "Get Products by Category",
+				  "request": {
+					"method": "GET",
+					"url": {
+					  "raw": "{{baseUrl}}/api/products/category/{{category}}",
+					  "host": ["{{baseUrl}}"],
+					  "path": ["api", "products", "category", "{{category}}"]
+					},
+					"description": "Retrieve products by category."
+				  }
+				},
+				{
+				  "name": "Get Products by Brand",
+				  "request": {
+					"method": "GET",
+					"url": {
+					  "raw": "{{baseUrl}}/api/products/brand/{{brand}}",
+					  "host": ["{{baseUrl}}"],
+					  "path": ["api", "products", "brand", "{{brand}}"]
+					},
+					"description": "Retrieve products by brand."
+				  }
+				},
+				{
+				  "name": "Get Products by Status",
+				  "request": {
+					"method": "GET",
+					"url": {
+					  "raw": "{{baseUrl}}/api/products/status/{{status}}",
+					  "host": ["{{baseUrl}}"],
+					  "path": ["api", "products", "status", "{{status}}"]
+					},
+					"description": "Retrieve products by status."
+				  }
+				},
+				{
+				  "name": "Get Products by Price Range",
+				  "request": {
+					"method": "GET",
+					"url": {
+					  "raw": "{{baseUrl}}/api/products/price/{{min}}/{{max}}",
+					  "host": ["{{baseUrl}}"],
+					  "path": ["api", "products", "price", "{{min}}", "{{max}}"]
+					},
+					"description": "Retrieve products within a price range."
+				  }
+				},
+				{
+				  "name": "Get Products by Category and Price Range",
+				  "request": {
+					"method": "GET",
+					"url": {
+					  "raw": "{{baseUrl}}/api/products/category/{{category}}/price/{{min}}/{{max}}",
+					  "host": ["{{baseUrl}}"],
+					  "path": ["api", "products", "category", "{{category}}", "price", "{{min}}", "{{max}}"]
+					},
+					"description": "Retrieve products by category and price range."
+				  }
+				},
+				{
+				  "name": "Get Products by Category and Brand",
+				  "request": {
+					"method": "GET",
+					"url": {
+					  "raw": "{{baseUrl}}/api/products/category/{{category}}/brand/{{brand}}",
+					  "host": ["{{baseUrl}}"],
+					  "path": ["api", "products", "category", "{{category}}", "brand", "{{brand}}"]
+					},
+					"description": "Retrieve products by category and brand."
+				  }
+				},
+				{
+				  "name": "Get Products by Category, Brand, and Price Range",
+				  "request": {
+					"method": "GET",
+					"url": {
+					  "raw": "{{baseUrl}}/api/products/category/{{category}}/brand/{{brand}}/price/{{min}}/{{max}}",
+					  "host": ["{{baseUrl}}"],
+					  "path": ["api", "products", "category", "{{category}}", "brand", "{{brand}}", "price", "{{min}}", "{{max}}"]
+					},
+					"description": "Retrieve products by category, brand, and price range."
+				  }
+				},
+				{
+				  "name": "Search Products by Keyword",
+				  "request": {
+					"method": "GET",
+					"url": {
+					  "raw": "{{baseUrl}}/api/products/search/{{keyword}}",
+					  "host": ["{{baseUrl}}"],
+					  "path": ["api", "products", "search", "{{keyword}}"]
+					},
+					"description": "Search for products by a keyword."
+				  }
+				}
+			],
+			"description": "Product search and filtering endpoints"
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8081",
+			"type": "string"
+		},
+		{
+			"key": "authToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "userId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "email",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "reset_token",
+			"value": "",
+			"type": "default"
+		},
+        {
+            "key": "category",
+            "value": "",
+            "type": "default"
+        },
+        {
+            "key": "brand",
+            "value": "",
+            "type": "default"
+        },
+        {
+            "key": "status",
+            "value": "",
+            "type": "default"
+        },
+        {
+            "key": "min",
+            "value": "",
+            "type": "default"
+        },
+        {
+            "key": "max",
+            "value": "",
+            "type": "default"
+        },
+        {
+            "key": "keyword",
+            "value": "",
+            "type": "default"
+        },
+        {
+            "key": "id",
+            "value": "",
+            "type": "default"
+        },
+        {
+            "key": "productId",
+            "value": "",
+            "type": "default"
+        },
+        {
+            "key": "productName",
+            "value": "",
+            "type": "default"
+        },
+        {
+            "key": "productDescription",
+            "value": "",
+            "type": "default"
+        },
+        {
+            "key": "productPrice",
+            "value": "",
+            "type": "default"
+        },
+        {
+            "key": "productCategory",
+            "value": "",
+            "type": "default"
+        },
+        {
+            "key": "productBrand",
+            "value": "",
+            "type": "default"
+        },
+        {
+            "key": "productImageUrl",
+            "value": "",
+            "type": "default"
+        }
+	]
+}
