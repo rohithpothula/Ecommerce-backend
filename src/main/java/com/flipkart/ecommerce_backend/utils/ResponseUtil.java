@@ -1,12 +1,12 @@
 package com.flipkart.ecommerce_backend.utils;
 
-import com.flipkart.ecommerce_backend.api.models.GenericResponseBody;
+import com.flipkart.ecommerce_backend.dtos.GenericResponseBodyDto;
 
 import java.util.Map;
 
 public class ResponseUtil {
-    public static GenericResponseBody success(String message, Map<String, Object> details) {
-        GenericResponseBody response = new GenericResponseBody();
+    public static GenericResponseBodyDto success(String message, Map<String, Object> details) {
+        GenericResponseBodyDto response = new GenericResponseBodyDto();
         response.setSuccess(true);
         response.setMessage(message);
         response.setStatus("SUCCESS");
@@ -15,8 +15,8 @@ public class ResponseUtil {
         return response;
     }
 
-    public static GenericResponseBody failure(String message, String failureReason) {
-        GenericResponseBody response = new GenericResponseBody();
+    public static GenericResponseBodyDto failure(String message, String failureReason) {
+        GenericResponseBodyDto response = new GenericResponseBodyDto();
         response.setSuccess(false);
         response.setMessage(message);
         response.setStatus("FAILURE");

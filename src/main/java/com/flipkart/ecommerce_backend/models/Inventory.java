@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @Entity
@@ -12,9 +13,9 @@ import java.time.LocalDateTime;
 public class Inventory {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @GeneratedValue(strategy = GenerationType.UUID)
   @Column(name = "id", unique = true)
-  private long id;
+  private UUID id;
 
   @JsonIgnore
   @OneToOne(optional = false, orphanRemoval = true)

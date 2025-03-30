@@ -1,21 +1,23 @@
 package com.flipkart.ecommerce_backend.services;
 
-import com.flipkart.ecommerce_backend.api.models.ProductCreateDto;
-import com.flipkart.ecommerce_backend.api.models.ProductDto;
-import com.flipkart.ecommerce_backend.api.models.ProductUpdateDto;
+import com.flipkart.ecommerce_backend.dtos.ProductCreateDto;
+import com.flipkart.ecommerce_backend.dtos.ProductDto;
+import com.flipkart.ecommerce_backend.dtos.ProductUpdateDto;
 import com.flipkart.ecommerce_backend.models.ProductStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.UUID;
+
 
 public interface ProductService {
-    void addProduct(ProductCreateDto productCreateDto);
+    ProductDto addProduct(ProductCreateDto productCreateDto);
 
-    ProductDto getProduct(Long id);
+    ProductDto getProduct(UUID id);
 
-    void deleteProduct(Long id);
+    void deleteProduct(UUID id);
 
-    void updateProduct(Long id, ProductUpdateDto productUpdateDto);
+    ProductDto updateProduct(UUID id, ProductUpdateDto productUpdateDto);
 
     Page<ProductDto> getProducts(Pageable pageable);
 

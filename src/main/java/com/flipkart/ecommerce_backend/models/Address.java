@@ -11,15 +11,17 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
+import java.util.UUID;
+
 @Data
 @Entity
 @Table(name = "address")
 public class Address {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @GeneratedValue(strategy = GenerationType.UUID)
   @Column(name = "id", nullable = false)
-  private Long id;
+  private UUID id;
 
   @Column(name = "address_line_1", nullable = false, length = 512)
   private String addressLine1;
@@ -30,8 +32,14 @@ public class Address {
   @Column(name = "city", nullable = false)
   private String city;
 
+  @Column(name = "state", nullable = false)
+  private String state;
+
   @Column(name = "country", length = 75, nullable = false)
   private String country;
+
+  @Column(name = "postal_code", length = 20, nullable = false)
+  private String postalCode;
 
   @JsonIgnore
   @ManyToOne(optional = false)

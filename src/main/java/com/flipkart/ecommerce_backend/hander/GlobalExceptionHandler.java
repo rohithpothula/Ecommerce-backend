@@ -1,25 +1,66 @@
 package com.flipkart.ecommerce_backend.hander;
 
-import com.flipkart.ecommerce_backend.Exception.*;
+import com.flipkart.ecommerce_backend.exception.*;
 
+import com.flipkart.ecommerce_backend.exception.auth.TokenVerificationException;
+import com.flipkart.ecommerce_backend.exception.user.InvalidUserCredentialsException;
+import com.flipkart.ecommerce_backend.exception.user.UserNotVerifiedException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
 
+import java.nio.file.AccessDeniedException;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
 
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    /**
+     * Handles specific Authentication failures like bad credentials.
+     * Returns 401 Unauthorized.
+     */
+    @ExceptionHandler({AuthenticationException.class, BadCredentialsException.class})
+    public ResponseEntity<ErrorResponse> handleAuthenticationException(AuthenticationException ex, WebRequest request) {
+        // Log specifically as an authentication failure (often just WARN level)
+        log.warn("Authentication Failure: {}", ex.getMessage());
+        // Provide a user-friendly, non-specific message
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .code(ErrorCode.AUTHENTICATION_FAILED.getCode()) // Use a specific ErrorCode enum value
+                .message("Invalid username or password.")
+                .status(HttpStatus.UNAUTHORIZED.value())
+                .timestamp(LocalDateTime.now().toString())
+                .build();
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+    }
+    /**
+     * Handles authorization failures (user authenticated but lacks permissions).
+     * Returns 403 Forbidden.
+     */
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDenied(AuthorizationDeniedException ex) {
+        log.warn("Access denied exception occurred: {}", ex.getMessage(), ex);
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .code(ErrorCode.ACCESS_DENIED.getCode()) // Use a specific ErrorCode
+                .message("Access Denied: You do not have permission to perform this action or access this resource.") // Clear user message
+                .status(HttpStatus.FORBIDDEN.value()) // 403 status
+                .timestamp(LocalDateTime.now().toString())
+                .build();
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+    }
     /**
      * Handle all BusinessExceptions (UserException, EmailException, TokenException)
      */
@@ -143,15 +184,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(TokenVerificationException.class)
-    public ResponseEntity<ErrorResponse> handleTokenVerificationException(TokenVerificationException ex) {
-        log.error("Token verification failed: {}", ex.getMessage(), ex);
-
-        ErrorResponse errorResponse = ErrorResponse.of(
-                ex.getErrorCode(),
-                ex.getMessage()
-        );
-
-        return new ResponseEntity<>(errorResponse, ex.getErrorCode().getHttpStatus());
-    }
+    // Removed redundant handleTokenVerificationException handler,
+    // as TokenException extends BusinessException and is handled there.
 }

@@ -23,7 +23,9 @@ public enum ErrorCode {
     // Token Domain (3000-3999)
     TOKEN_EXPIRED("TKN-3000", "Verification token has expired", HttpStatus.UNAUTHORIZED),
     TOKEN_INVALID("TKN-3001", "Invalid email verification token", HttpStatus.BAD_REQUEST),
-    TOKEN_ALREADY_VERIFIED("TKN-3002", "Verification token already verified", HttpStatus.CONFLICT),
+    TOKEN_NOT_FOUND("TKN-3002", "Verification token not found", HttpStatus.NOT_FOUND),
+    TOKEN_NOT_SUPPORTED("TKN-3003", "Token not supported", HttpStatus.BAD_REQUEST), // Changed code to TKN-3003
+    TOKEN_ALREADY_VERIFIED("TKN-3004", "Verification token already verified", HttpStatus.CONFLICT), // Changed code to TKN-3004
 
     // Validation Domain (4000-4999)
     VALIDATION_ERROR("VAL-4000", "Validation error", HttpStatus.BAD_REQUEST),
@@ -45,8 +47,28 @@ public enum ErrorCode {
     PRODUCT_NOT_FOUND("PRD-8000", "Product not found", HttpStatus.NOT_FOUND),
     PRODUCT_ALREADY_EXISTS("PRD-8001", "Product already exists", HttpStatus.CONFLICT),
     INVALID_PRODUCT_STATUS("PRD-8002", "Invalid product status", HttpStatus.BAD_REQUEST),
-    PRODUCT_VALIDATION_ERROR("PRD-8003", "Product validation error", HttpStatus.BAD_REQUEST);
+    PRODUCT_VALIDATION_ERROR("PRD-8003", "Product validation error", HttpStatus.BAD_REQUEST),
 
+    // Address Domain (9000-9999)
+    ADDRESS_NOT_FOUND("ADR-9000", "Address not found", HttpStatus.NOT_FOUND),
+    ADDRESS_ALREADY_EXISTS("ADR-9001", "Address already exists", HttpStatus.CONFLICT),
+    INVALID_ADDRESS("ADR-9002", "Invalid address", HttpStatus.BAD_REQUEST),
+    ADDRESS_VALIDATION_ERROR("ADR-9003", "Address validation error", HttpStatus.BAD_REQUEST),
+    ADDRESS_NOT_VERIFIED("ADR-9004", "Address not verified", HttpStatus.FORBIDDEN),
+    ADDRESS_VERIFICATION_FAILED("ADR-9005", "Address verification failed", HttpStatus.INTERNAL_SERVER_ERROR),
+
+    // Role Domain (10000-10999)
+    ROLE_NOT_FOUND("ROL-10000", "Role not found", HttpStatus.NOT_FOUND),
+    ROLE_ALREADY_EXISTS("ROL-10001", "Role already exists", HttpStatus.CONFLICT),
+    ROLE_VALIDATION_ERROR("ROL-10002", "Role validation error", HttpStatus.BAD_REQUEST),
+    ROLE_ASSIGNMENT_FAILED("ROL-10003", "Role assignment failed", HttpStatus.INTERNAL_SERVER_ERROR),
+
+    //Authentication Domain (11000-11999)
+    AUTHENTICATION_FAILED("AUTH-11000", "Authentication failed", HttpStatus.UNAUTHORIZED),
+    // Authorization Failed
+    ACCESS_DENIED("AUTH-11001", "Access denied", HttpStatus.FORBIDDEN),
+    // Product SKU Domain (12000-12999)
+    SKU_ALREADY_EXISTS("SKU-12000", "SKU already exists", HttpStatus.CONFLICT);
     private final String code;
     private final String defaultMessage;
     private final HttpStatus httpStatus;

@@ -14,7 +14,7 @@ import java.sql.Timestamp;
 
 @Data
 @Entity
-@Table(name = "verification_token")
+@Table(name = "verification_tokens")
 public class VerificationToken {
 
   @Id
