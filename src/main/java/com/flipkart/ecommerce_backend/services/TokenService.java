@@ -2,7 +2,7 @@ package com.flipkart.ecommerce_backend.services;
 
 import com.flipkart.ecommerce_backend.dtos.LoginResponse;
 import com.flipkart.ecommerce_backend.dtos.RefreshTokenRequest;
-import com.flipkart.ecommerce_backend.exception.auth.TokenException;
+import com.flipkart.ecommerce_backend.security.exception.TokenException;
 import com.flipkart.ecommerce_backend.models.LocalUser;
 import com.flipkart.ecommerce_backend.models.RefreshToken;
 import io.jsonwebtoken.Claims; // Import from your JWT library (e.g., jjwt)

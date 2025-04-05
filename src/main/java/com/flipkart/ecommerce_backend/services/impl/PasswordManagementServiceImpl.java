@@ -1,6 +1,6 @@
 package com.flipkart.ecommerce_backend.services.impl;
 
-import com.flipkart.ecommerce_backend.exception.user.InvalidUserCredentialsException;
+import com.flipkart.ecommerce_backend.security.exception.InvalidUserCredentialsException;
 import com.flipkart.ecommerce_backend.exception.user.UserNotFoundException;
 import com.flipkart.ecommerce_backend.dtos.ChangePasswordRequest;
 import com.flipkart.ecommerce_backend.dtos.ResetPasswordRequest;
@@ -8,7 +8,7 @@ import com.flipkart.ecommerce_backend.models.LocalUser;
 import com.flipkart.ecommerce_backend.repository.LocalUserRepository;
 import com.flipkart.ecommerce_backend.security.store.TokenStore;
 import com.flipkart.ecommerce_backend.services.EmailService;
-import com.flipkart.ecommerce_backend.services.PasswordManagementService;
+import com.flipkart.ecommerce_backend.security.service.PasswordManagementService;
 import com.flipkart.ecommerce_backend.services.PasswordResetTokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

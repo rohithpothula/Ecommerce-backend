@@ -1,6 +1,6 @@
 package com.flipkart.ecommerce_backend.exception.user;
 
-import com.flipkart.ecommerce_backend.hander.ErrorCode;
+import com.flipkart.ecommerce_backend.handler.ErrorCode;
 
 public class UserNotFoundException extends UserException {
     public UserNotFoundException(String userId) {

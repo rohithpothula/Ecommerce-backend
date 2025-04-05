@@ -1,4 +1,4 @@
-package com.flipkart.ecommerce_backend.services;
+package com.flipkart.ecommerce_backend.security.service;
 
 import com.flipkart.ecommerce_backend.dtos.ChangePasswordRequest;
 import com.flipkart.ecommerce_backend.dtos.ResetPasswordRequest;

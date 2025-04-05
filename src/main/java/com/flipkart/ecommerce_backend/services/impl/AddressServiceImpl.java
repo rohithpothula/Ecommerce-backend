@@ -5,7 +5,7 @@ import com.flipkart.ecommerce_backend.dtos.AddressDTO;
 import com.flipkart.ecommerce_backend.dtos.AddressRequestDTO;
 import com.flipkart.ecommerce_backend.exception.DatabaseException;
 import com.flipkart.ecommerce_backend.exception.address.AddressNotFoundException;
-import com.flipkart.ecommerce_backend.exception.UnauthorizedAccessException;
+import com.flipkart.ecommerce_backend.exception.auth.UnauthorizedAccessException;
 import com.flipkart.ecommerce_backend.exception.user.UserNotFoundException;
 import com.flipkart.ecommerce_backend.models.Address;
 import com.flipkart.ecommerce_backend.models.LocalUser;

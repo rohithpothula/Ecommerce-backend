@@ -3,7 +3,7 @@ package com.flipkart.ecommerce_backend.controllers.auth;
 import com.flipkart.ecommerce_backend.dtos.ChangePasswordRequest;
 import com.flipkart.ecommerce_backend.dtos.GenericResponseBodyDto;
 import com.flipkart.ecommerce_backend.dtos.ResetPasswordRequest;
-import com.flipkart.ecommerce_backend.services.PasswordManagementService;
+import com.flipkart.ecommerce_backend.security.service.PasswordManagementService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import lombok.extern.slf4j.Slf4j;

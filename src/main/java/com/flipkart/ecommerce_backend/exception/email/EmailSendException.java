@@ -1,6 +1,6 @@
 package com.flipkart.ecommerce_backend.exception.email;
 
-import com.flipkart.ecommerce_backend.hander.ErrorCode;
+import com.flipkart.ecommerce_backend.handler.ErrorCode;
 
 /**
  * Thrown when an email cannot be sent due to system or configuration issues

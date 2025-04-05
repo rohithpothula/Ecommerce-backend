@@ -1,7 +1,7 @@
 package com.flipkart.ecommerce_backend.exception.email;
 
-import com.flipkart.ecommerce_backend.exception.auth.TokenException;
-import com.flipkart.ecommerce_backend.hander.ErrorCode;
+import com.flipkart.ecommerce_backend.security.exception.TokenException;
+import com.flipkart.ecommerce_backend.handler.ErrorCode;
 
 /**
  * Thrown when an email verification token is invalid, malformed, or does not exist

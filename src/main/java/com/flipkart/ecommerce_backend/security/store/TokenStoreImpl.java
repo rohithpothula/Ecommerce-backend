@@ -1,7 +1,7 @@
 package com.flipkart.ecommerce_backend.security.store;
 
-import com.flipkart.ecommerce_backend.exception.auth.TokenException;
-import com.flipkart.ecommerce_backend.hander.ErrorCode;
+import com.flipkart.ecommerce_backend.security.exception.TokenException;
+import com.flipkart.ecommerce_backend.handler.ErrorCode;
 import com.flipkart.ecommerce_backend.models.LocalUser;
 import com.flipkart.ecommerce_backend.models.RefreshToken;
 import com.flipkart.ecommerce_backend.repository.LocalUserRepository;

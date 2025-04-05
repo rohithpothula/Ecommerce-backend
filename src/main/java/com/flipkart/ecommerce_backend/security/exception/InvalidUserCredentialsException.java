@@ -1,6 +1,7 @@
-package com.flipkart.ecommerce_backend.exception.user;
+package com.flipkart.ecommerce_backend.security.exception;
 
-import com.flipkart.ecommerce_backend.hander.ErrorCode;
+import com.flipkart.ecommerce_backend.exception.user.UserException;
+import com.flipkart.ecommerce_backend.handler.ErrorCode;
 
 /**
  * Thrown when login credentials are invalid

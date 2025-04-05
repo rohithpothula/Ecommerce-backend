@@ -1,5 +1,6 @@
-package com.flipkart.ecommerce_backend.security;
+package com.flipkart.ecommerce_backend.security.config;
 
+import com.flipkart.ecommerce_backend.security.filter.JwtAuthenticationFilter;
 import com.flipkart.ecommerce_backend.services.UserManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -10,19 +11,15 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-// import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class WebSecurityConfig {
   @Autowired private UserManagementService userDetailsService;
-  @Autowired private JwtFilter jwtFilter;
+  @Autowired private JwtAuthenticationFilter jwtAuthenticationFilter;
 
   @Bean
   public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
@@ -42,7 +39,7 @@ public class WebSecurityConfig {
         .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
     // Add the JWT filter before the standard UsernamePasswordAuthenticationFilter
-    http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+    http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
     // Configure authorization rules
     http.authorizeHttpRequests()

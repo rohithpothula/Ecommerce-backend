@@ -1,4 +1,4 @@
-package com.flipkart.ecommerce_backend.config;
+package com.flipkart.ecommerce_backend.security.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
