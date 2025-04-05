@@ -1,6 +1,6 @@
 package com.flipkart.ecommerce_backend;
 
-import com.flipkart.ecommerce_backend.models.Repository.LocalUserRepository;
+import com.flipkart.ecommerce_backend.repository.LocalUserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

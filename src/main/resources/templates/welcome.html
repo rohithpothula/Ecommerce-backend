@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<!-- 1. Add Thymeleaf namespace -->
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- 2. Make title dynamic -->
+    <title th:text="${emailType} + ' Email'">Default Email Title</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+<!-- 3. Make heading dynamic -->
+<h1 th:text="${emailType} + ' Email'">Email Subject</h1>
+
+<!-- 4. Display the name dynamically -->
+<p>Hi <span th:text="${name}">User</span>,</p>
+
+<!-- 5. Use th:switch for conditional content based on emailType -->
+<div th:switch="${emailType}">
+
+    <!-- Case for Welcome Email -->
+    <p th:case="'Welcome'">Welcome to our platform! We're excited to have you on board.</p>
+
+    <!-- Case for Verification Email (using th:block to group elements) -->
+    <th:block th:case="'Verification'">
+        <p>Thank you for signing up. Please verify your email address by clicking the link below:</p>
+        <!-- 6. Make the verification link dynamic -->
+        <p><a th:href="${verificationLink}">Verify Email</a></p>
+    </th:block>
+
+    <!-- Add more th:case blocks here for other email types -->
+    <!-- Example:
+    <p th:case="'PasswordReset'">We received a request to reset your password...</p>
+    -->
+
+    <!-- Optional: Default case if emailType doesn't match known types -->
+    <!--
+    <p th:case="*">This is a standard notification.</p>
+    -->
+</div>
+
+<p>If you have any questions, feel free to reach out to us.</p>
+<p>Thanks,<br/>The E-commerce Team</p>
+</body>
+</html>

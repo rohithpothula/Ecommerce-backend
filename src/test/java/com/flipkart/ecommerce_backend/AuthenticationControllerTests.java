@@ -2,7 +2,7 @@ package com.flipkart.ecommerce_backend;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.flipkart.ecommerce_backend.api.models.RegistrationRequest;
+import com.flipkart.ecommerce_backend.dtos.RegistrationRequest;
 import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;

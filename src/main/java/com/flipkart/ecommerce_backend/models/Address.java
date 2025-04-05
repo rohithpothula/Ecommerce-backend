@@ -9,15 +9,19 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Data;
 
+import java.util.UUID;
+
+@Data
 @Entity
 @Table(name = "address")
 public class Address {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @GeneratedValue(strategy = GenerationType.UUID)
   @Column(name = "id", nullable = false)
-  private int id;
+  private UUID id;
 
   @Column(name = "address_line_1", nullable = false, length = 512)
   private String addressLine1;
@@ -28,59 +32,17 @@ public class Address {
   @Column(name = "city", nullable = false)
   private String city;
 
+  @Column(name = "state", nullable = false)
+  private String state;
+
   @Column(name = "country", length = 75, nullable = false)
   private String country;
+
+  @Column(name = "postal_code", length = 20, nullable = false)
+  private String postalCode;
 
   @JsonIgnore
   @ManyToOne(optional = false)
   @JoinColumn(name = "user_id", nullable = false)
   private LocalUser localUser;
-
-  public int getId() {
-    return id;
-  }
-
-  public void setId(int id) {
-    this.id = id;
-  }
-
-  public String getAddressLine1() {
-    return addressLine1;
-  }
-
-  public void setAddressLine1(String addressLine1) {
-    this.addressLine1 = addressLine1;
-  }
-
-  public String getAddressLine2() {
-    return addressLine2;
-  }
-
-  public void setAddressLine2(String addressLine2) {
-    this.addressLine2 = addressLine2;
-  }
-
-  public String getCity() {
-    return city;
-  }
-
-  public void setCity(String city) {
-    this.city = city;
-  }
-
-  public String getCountry() {
-    return country;
-  }
-
-  public void setCountry(String country) {
-    this.country = country;
-  }
-
-  public LocalUser getLocalUser() {
-    return localUser;
-  }
-
-  public void setLocalUser(LocalUser localUser) {
-    this.localUser = localUser;
-  }
 }

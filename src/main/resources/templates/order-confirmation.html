@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<!-- 1. Add Thymeleaf namespace -->
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Order Confirmation</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+<h1>Order Confirmation</h1>
+
+<!-- 2. Display name dynamically -->
+<p>Hi <span th:text="${name}">Customer</span>,</p>
+
+<p>Thank you for your order! Here are your order details:</p>
+
+<ul>
+    <!-- 3. Display Order ID -->
+    <li>Order ID: <span th:text="${orderId}">[Order ID]</span></li>
+
+    <!-- 4. Display and Format Total Amount (assumes totalAmount is a Number like BigDecimal/Double) -->
+    <li>Total Amount: <span th:text="${#numbers.formatCurrency(totalAmount)}">[Amount]</span></li>
+
+    <!-- 5. Display and Format Order Date (assumes orderDate is a Temporal like LocalDateTime/Date) -->
+    <li>Order Date: <span th:text="${#temporals.format(orderDate, 'dd MMM yyyy, HH:mm')}">[Date]</span></li>
+    <!-- Adjust the date format 'dd MMM yyyy, HH:mm' as needed -->
+</ul>
+
+<p>We will notify you once your order is shipped.</p>
+
+<p>Thanks,<br/>The E-commerce Team</p>
+</body>
+</html>
