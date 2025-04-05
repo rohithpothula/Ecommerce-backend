@@ -1,7 +1,7 @@
 package com.flipkart.ecommerce_backend.exception.user;
 
 import com.flipkart.ecommerce_backend.exception.BusinessException;
-import com.flipkart.ecommerce_backend.hander.ErrorCode;
+import com.flipkart.ecommerce_backend.handler.ErrorCode;
 
 /**
  * Base exception for user-related business errors

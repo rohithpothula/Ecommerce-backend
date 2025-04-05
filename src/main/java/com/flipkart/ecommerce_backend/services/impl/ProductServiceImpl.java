@@ -9,7 +9,7 @@ import com.flipkart.ecommerce_backend.exception.product.ProductNotFoundException
 import com.flipkart.ecommerce_backend.exception.product.SkuAlreadyExistsException;
 import com.flipkart.ecommerce_backend.models.ProductVariant;
 import com.flipkart.ecommerce_backend.dtos.ProductUpdateDto;
-import com.flipkart.ecommerce_backend.hander.ErrorCode;
+import com.flipkart.ecommerce_backend.handler.ErrorCode;
 import com.flipkart.ecommerce_backend.models.Product;
 import com.flipkart.ecommerce_backend.models.ProductStatus;
 import com.flipkart.ecommerce_backend.repository.ProductRepository;

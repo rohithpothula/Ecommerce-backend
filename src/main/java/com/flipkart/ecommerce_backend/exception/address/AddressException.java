@@ -1,7 +1,7 @@
 package com.flipkart.ecommerce_backend.exception.address;
 
 import com.flipkart.ecommerce_backend.exception.BusinessException;
-import com.flipkart.ecommerce_backend.hander.ErrorCode;
+import com.flipkart.ecommerce_backend.handler.ErrorCode;
 
 /**
  * Base exception for address-related business errors

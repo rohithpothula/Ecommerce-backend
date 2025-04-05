@@ -1,6 +1,6 @@
 package com.flipkart.ecommerce_backend.exception.email;
 
-import com.flipkart.ecommerce_backend.hander.ErrorCode;
+import com.flipkart.ecommerce_backend.handler.ErrorCode;
 
 /**
  * Thrown when attempting to register with an email address that is already in use

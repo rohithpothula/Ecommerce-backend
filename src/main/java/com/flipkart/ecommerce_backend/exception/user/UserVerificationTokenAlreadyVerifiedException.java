@@ -1,7 +1,7 @@
 package com.flipkart.ecommerce_backend.exception.user;
 
-import com.flipkart.ecommerce_backend.exception.auth.TokenException;
-import com.flipkart.ecommerce_backend.hander.ErrorCode;
+import com.flipkart.ecommerce_backend.security.exception.TokenException;
+import com.flipkart.ecommerce_backend.handler.ErrorCode;
 
 /**
  * Thrown when attempting to use a verification token for an already verified account

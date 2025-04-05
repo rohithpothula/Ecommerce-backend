@@ -1,7 +1,7 @@
 package com.flipkart.ecommerce_backend.exception.email;
 
 import com.flipkart.ecommerce_backend.exception.BusinessException;
-import com.flipkart.ecommerce_backend.hander.ErrorCode;
+import com.flipkart.ecommerce_backend.handler.ErrorCode;
 
 /**
  * Base exception for email-related business errors

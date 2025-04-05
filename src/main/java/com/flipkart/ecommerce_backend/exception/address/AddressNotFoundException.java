@@ -1,7 +1,6 @@
 package com.flipkart.ecommerce_backend.exception.address;
 
-import com.flipkart.ecommerce_backend.exception.BusinessException;
-import com.flipkart.ecommerce_backend.hander.ErrorCode;
+import com.flipkart.ecommerce_backend.handler.ErrorCode;
 
 public class AddressNotFoundException extends AddressException {
     public AddressNotFoundException(String addressId) {

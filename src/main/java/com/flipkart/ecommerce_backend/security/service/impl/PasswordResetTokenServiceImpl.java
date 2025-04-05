@@ -1,7 +1,7 @@
-package com.flipkart.ecommerce_backend.services.impl;
+package com.flipkart.ecommerce_backend.security.service.impl;
 
-import com.flipkart.ecommerce_backend.exception.auth.TokenException;
-import com.flipkart.ecommerce_backend.hander.ErrorCode;
+import com.flipkart.ecommerce_backend.security.exception.TokenException;
+import com.flipkart.ecommerce_backend.handler.ErrorCode;
 import com.flipkart.ecommerce_backend.models.LocalUser;
 import com.flipkart.ecommerce_backend.models.PasswordResetToken;
 import com.flipkart.ecommerce_backend.repository.PasswordResetTokenRepository;

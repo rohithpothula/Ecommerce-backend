@@ -1,6 +1,6 @@
-package com.flipkart.ecommerce_backend.security;
+package com.flipkart.ecommerce_backend.security.filter;
 
-import com.flipkart.ecommerce_backend.exception.auth.TokenException;
+import com.flipkart.ecommerce_backend.security.exception.TokenException;
 import com.flipkart.ecommerce_backend.services.TokenService;
 
 import io.jsonwebtoken.Claims;
@@ -26,7 +26,7 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class JwtFilter extends OncePerRequestFilter {
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     // Dependencies injected via constructor, using interfaces
     private final TokenService tokenService;

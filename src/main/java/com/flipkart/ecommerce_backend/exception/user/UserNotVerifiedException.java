@@ -1,6 +1,6 @@
 package com.flipkart.ecommerce_backend.exception.user;
 
-import com.flipkart.ecommerce_backend.hander.ErrorCode;
+import com.flipkart.ecommerce_backend.handler.ErrorCode;
 import lombok.Getter;
 
 /**

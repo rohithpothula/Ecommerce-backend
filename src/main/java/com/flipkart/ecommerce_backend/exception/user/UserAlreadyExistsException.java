@@ -1,6 +1,6 @@
 package com.flipkart.ecommerce_backend.exception.user;
 
-import com.flipkart.ecommerce_backend.hander.ErrorCode;
+import com.flipkart.ecommerce_backend.handler.ErrorCode;
 
 /**
  * Thrown when attempting to create a user with a username that already exists

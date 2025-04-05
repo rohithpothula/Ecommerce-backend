@@ -2,7 +2,7 @@ package com.flipkart.ecommerce_backend.services;
 
 
 import com.flipkart.ecommerce_backend.models.LocalUser;
-import com.flipkart.ecommerce_backend.exception.auth.TokenException;
+import com.flipkart.ecommerce_backend.security.exception.TokenException;
 
 
 public interface PasswordResetTokenService {

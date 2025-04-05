@@ -1,9 +1,8 @@
-package com.flipkart.ecommerce_backend.hander;
+package com.flipkart.ecommerce_backend.handler;
 
 import com.flipkart.ecommerce_backend.exception.*;
 
-import com.flipkart.ecommerce_backend.exception.auth.TokenVerificationException;
-import com.flipkart.ecommerce_backend.exception.user.InvalidUserCredentialsException;
+import com.flipkart.ecommerce_backend.security.exception.InvalidUserCredentialsException;
 import com.flipkart.ecommerce_backend.exception.user.UserNotVerifiedException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
-import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;

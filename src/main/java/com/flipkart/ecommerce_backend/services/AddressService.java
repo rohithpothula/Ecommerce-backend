@@ -3,7 +3,7 @@ package com.flipkart.ecommerce_backend.services;
 
 import com.flipkart.ecommerce_backend.dtos.AddressDTO;
 import com.flipkart.ecommerce_backend.dtos.AddressRequestDTO;
-import com.flipkart.ecommerce_backend.exception.UnauthorizedAccessException;
+import com.flipkart.ecommerce_backend.exception.auth.UnauthorizedAccessException;
 import com.flipkart.ecommerce_backend.exception.address.AddressNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;

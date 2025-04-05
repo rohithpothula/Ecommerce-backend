@@ -1,6 +1,6 @@
 package com.flipkart.ecommerce_backend.exception;
 
-import com.flipkart.ecommerce_backend.hander.ErrorCode;
+import com.flipkart.ecommerce_backend.handler.ErrorCode;
 
 import java.util.Collections;
 import java.util.List;

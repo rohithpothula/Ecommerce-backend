@@ -1,7 +1,7 @@
-package com.flipkart.ecommerce_backend.exception.auth;
+package com.flipkart.ecommerce_backend.security.exception;
 
 import com.flipkart.ecommerce_backend.exception.BusinessException;
-import com.flipkart.ecommerce_backend.hander.ErrorCode;
+import com.flipkart.ecommerce_backend.handler.ErrorCode;
 
 /**
  * Base exception for token-related business errors (verification, password reset, etc.)

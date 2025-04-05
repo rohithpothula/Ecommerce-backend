@@ -1,4 +1,4 @@
-package com.flipkart.ecommerce_backend.hander;
+package com.flipkart.ecommerce_backend.handler;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
