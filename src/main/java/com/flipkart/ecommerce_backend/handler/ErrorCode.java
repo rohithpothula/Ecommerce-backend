@@ -42,6 +42,8 @@ public enum ErrorCode {
 
     UNAUTHORIZED_ACCESS("SEC-7000", "Unauthorized access", HttpStatus.FORBIDDEN),
     INSUFFICIENT_PERMISSIONS("SEC-7001", "Insufficient permissions", HttpStatus.FORBIDDEN),
+    RATE_LIMIT_ERROR_LOGIN("SEC-7002","Too Many requests for Login",HttpStatus.TOO_MANY_REQUESTS),
+    RATE_LIMIT_ERROR_RESET_PASSWORD("SEC-7003","Too Many requests for password Reset",HttpStatus.TOO_MANY_REQUESTS),
 
     // Product Domain (8000-8999)
     PRODUCT_NOT_FOUND("PRD-8000", "Product not found", HttpStatus.NOT_FOUND),
