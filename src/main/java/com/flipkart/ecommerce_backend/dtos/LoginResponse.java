@@ -1,10 +1,9 @@
 package com.flipkart.ecommerce_backend.dtos;
 
 import com.flipkart.ecommerce_backend.models.LocalUser;
+import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Builder
@@ -16,9 +15,9 @@ public class LoginResponse {
   private final LocalDateTime timestamp;
   private final UserDto userInfo; // Optional user details
 
-
   public static LoginResponse of(String token, LocalUser user) {
-    UserDto userInfo = UserDto.builder()
+    UserDto userInfo =
+        UserDto.builder()
             .id(user.getId())
             .username(user.getUsername())
             .email(user.getEmail())
@@ -27,12 +26,11 @@ public class LoginResponse {
             .build();
 
     return builder()
-            .message("Login successful")
-            .accessToken(token)
-            .refreshToken(token)
-            .timestamp(LocalDateTime.now())
-            .userInfo(userInfo)
-            .build();
+        .message("Login successful")
+        .accessToken(token)
+        .refreshToken(token)
+        .timestamp(LocalDateTime.now())
+        .userInfo(userInfo)
+        .build();
   }
 }
-

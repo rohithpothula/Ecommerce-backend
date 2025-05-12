@@ -4,9 +4,5 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController("/api/users/profile")
 public class UserProfileController {
-    /**
-     * /getProfile - GET
-     * /updateProfile - PUT
-     * /updatePreferences - PUT
-     */
+  /** /getProfile - GET /updateProfile - PUT /updatePreferences - PUT */
 }

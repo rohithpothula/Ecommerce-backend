@@ -2,18 +2,17 @@ package com.flipkart.ecommerce_backend.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import java.util.*;
+import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
 @Entity
 @Data
-@ToString(exclude = {"addresses", "verificationTokens"})  // Add this annotation
+@ToString(exclude = {"addresses", "verificationTokens"}) // Add this annotation
 @Table(name = "local_user")
 public class LocalUser implements UserDetails {
 
@@ -55,10 +54,13 @@ public class LocalUser implements UserDetails {
   private boolean accountNonLocked = true; // Is the account locked (e.g., too many failed logins)?
 
   // --- Relationship with Role ---
-  @ManyToMany(fetch = FetchType.EAGER) // EAGER fetch for roles is often needed for immediate authority checks
-  @JoinTable(name = "user_roles",
-          joinColumns = @JoinColumn(name = "user_id"),
-          inverseJoinColumns = @JoinColumn(name = "role_id"))
+  @ManyToMany(
+      fetch =
+          FetchType.EAGER) // EAGER fetch for roles is often needed for immediate authority checks
+  @JoinTable(
+      name = "user_roles",
+      joinColumns = @JoinColumn(name = "user_id"),
+      inverseJoinColumns = @JoinColumn(name = "role_id"))
   private Set<Role> roles = new HashSet<>();
 
   // --- Relationship with Address ---
@@ -78,51 +80,53 @@ public class LocalUser implements UserDetails {
   public Collection<? extends GrantedAuthority> getAuthorities() {
     // ... null check ...
     return this.roles.stream()
-            .map(role -> {
-              String authorityString = role.getName().name(); // <-- BREAKPOINT 1: Inspect authorityString
-              SimpleGrantedAuthority authority = new SimpleGrantedAuthority(authorityString); // <-- BREAKPOINT 2: Inspect authority object
+        .map(
+            role -> {
+              String authorityString =
+                  role.getName().name(); // <-- BREAKPOINT 1: Inspect authorityString
+              SimpleGrantedAuthority authority =
+                  new SimpleGrantedAuthority(
+                      authorityString); // <-- BREAKPOINT 2: Inspect authority object
               return authority;
             })
-            .collect(Collectors.toList());
+        .collect(Collectors.toList());
   }
 
-    @Override
-    public String getUsername() {
-        return username;
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return accountNonExpired;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return accountNonLocked;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return credentialsNonExpired;
-    }
-    @Override
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void addRole(Role role) {
-        this.roles.add(role);
-    }
-
-    public void removeRole(Role role) {
-        this.roles.remove(role);
-    }
-
-
+  @Override
+  public String getUsername() {
+    return username;
   }
+
+  @Override
+  public String getPassword() {
+    return password;
+  }
+
+  @Override
+  public boolean isAccountNonExpired() {
+    return accountNonExpired;
+  }
+
+  @Override
+  public boolean isAccountNonLocked() {
+    return accountNonLocked;
+  }
+
+  @Override
+  public boolean isCredentialsNonExpired() {
+    return credentialsNonExpired;
+  }
+
+  @Override
+  public boolean isEnabled() {
+    return enabled;
+  }
+
+  public void addRole(Role role) {
+    this.roles.add(role);
+  }
+
+  public void removeRole(Role role) {
+    this.roles.remove(role);
+  }
+}

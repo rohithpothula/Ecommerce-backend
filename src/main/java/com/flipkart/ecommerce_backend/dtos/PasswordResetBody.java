@@ -9,5 +9,4 @@ public class PasswordResetBody {
 
   private String token;
   private String newPassword;
-
 }
