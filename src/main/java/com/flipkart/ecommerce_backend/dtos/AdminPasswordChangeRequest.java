@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 public class AdminPasswordChangeRequest {
 
-    @NotBlank(message = "New password cannot be blank")
-    @Size(min = 8, message = "New password must be at least 8 characters long")
-    private String newPassword;
+  @NotBlank(message = "New password cannot be blank")
+  @Size(min = 8, message = "New password must be at least 8 characters long")
+  private String newPassword;
 }

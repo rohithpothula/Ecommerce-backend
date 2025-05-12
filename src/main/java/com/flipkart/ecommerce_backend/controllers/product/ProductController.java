@@ -6,11 +6,10 @@ import com.flipkart.ecommerce_backend.dtos.ProductDto;
 import com.flipkart.ecommerce_backend.dtos.ProductUpdateDto;
 import com.flipkart.ecommerce_backend.models.ProductStatus;
 import com.flipkart.ecommerce_backend.services.ProductService;
-import java.util.Map;
-import java.util.UUID;
-
 import com.flipkart.ecommerce_backend.utils.ResponseUtil;
 import jakarta.validation.Valid;
+import java.util.Map;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -30,9 +29,11 @@ public class ProductController {
 
   @PostMapping()
   @PreAuthorize("hasRole('ADMIN') or hasRole('SELLER')")
-  public ResponseEntity<GenericResponseBodyDto> addProduct(@Valid @RequestBody ProductCreateDto productCreateDto) {
+  public ResponseEntity<GenericResponseBodyDto> addProduct(
+      @Valid @RequestBody ProductCreateDto productCreateDto) {
     ProductDto saveProductDto = productService.addProduct(productCreateDto);
-    GenericResponseBodyDto response = ResponseUtil.success("Product added successfully", Map.of("product", saveProductDto));
+    GenericResponseBodyDto response =
+        ResponseUtil.success("Product added successfully", Map.of("product", saveProductDto));
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
@@ -40,7 +41,8 @@ public class ProductController {
   @PreAuthorize("permitAll()")
   public ResponseEntity<GenericResponseBodyDto> getProduct(@PathVariable UUID id) {
     ProductDto product = productService.getProduct(id);
-    GenericResponseBodyDto response = ResponseUtil.success("Product fetched successfully", Map.of("product", product));
+    GenericResponseBodyDto response =
+        ResponseUtil.success("Product fetched successfully", Map.of("product", product));
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 
@@ -57,112 +59,122 @@ public class ProductController {
 
   @PutMapping("/{id}")
   @PreAuthorize("hasRole('ADMIN') or hasRole('SELLER')")
-  public ResponseEntity<GenericResponseBodyDto> updateProduct(@PathVariable UUID id, @Valid @RequestBody ProductUpdateDto productUpdateDto) {
+  public ResponseEntity<GenericResponseBodyDto> updateProduct(
+      @PathVariable UUID id, @Valid @RequestBody ProductUpdateDto productUpdateDto) {
     ProductDto updatedProductDto = productService.updateProduct(id, productUpdateDto);
-    GenericResponseBodyDto response = ResponseUtil.success("Product updated successfully", Map.of("product", updatedProductDto));
+    GenericResponseBodyDto response =
+        ResponseUtil.success("Product updated successfully", Map.of("product", updatedProductDto));
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 
   @GetMapping("/category/{category}")
   @PreAuthorize("permitAll()")
   public ResponseEntity<GenericResponseBodyDto> getProductsByCategory(
-          @PathVariable String category,
-          Pageable pageable
-  ) {
+      @PathVariable String category, Pageable pageable) {
     Page<ProductDto> products = productService.getProductsByCategory(category, pageable);
 
-    GenericResponseBodyDto response = ResponseUtil.success("Products fetched successfully", Map.of("products", products));
+    GenericResponseBodyDto response =
+        ResponseUtil.success("Products fetched successfully", Map.of("products", products));
     return ResponseEntity.ok(response);
   }
 
   @GetMapping("/brand/{brand}")
   @PreAuthorize("permitAll()")
   public ResponseEntity<GenericResponseBodyDto> getProductsByBrand(
-          @PathVariable String brand,
-          Pageable pageable
-  ) {
+      @PathVariable String brand, Pageable pageable) {
     Page<ProductDto> products = productService.getProductsByBrand(brand, pageable);
 
-    GenericResponseBodyDto response = ResponseUtil.success("Products fetched successfully", Map.of("products", products));
+    GenericResponseBodyDto response =
+        ResponseUtil.success("Products fetched successfully", Map.of("products", products));
     return ResponseEntity.ok(response);
   }
 
   @GetMapping("/status/{status}")
   @PreAuthorize("hasRole('ADMIN') or hasRole('SELLER')")
   public ResponseEntity<GenericResponseBodyDto> getProductsByStatus(
-          @PathVariable ProductStatus status,
-          Pageable pageable
-        ) {
+      @PathVariable ProductStatus status, Pageable pageable) {
     Page<ProductDto> products = productService.getProductsByStatus(status, pageable);
-    GenericResponseBodyDto response = ResponseUtil.success("Products fetched successfully", Map.of("products", products));
+    GenericResponseBodyDto response =
+        ResponseUtil.success("Products fetched successfully", Map.of("products", products));
     return ResponseEntity.ok(response);
   }
 
   @GetMapping("/price/{min}/{max}")
   @PreAuthorize("permitAll()")
   public ResponseEntity<GenericResponseBodyDto> getProductsByPriceRange(
-          @PathVariable Double min,
-          @PathVariable Double max,
-          Pageable pageable
-  ) {
+      @PathVariable Double min, @PathVariable Double max, Pageable pageable) {
     Page<ProductDto> products = productService.getProductsByPriceRange(min, max, pageable);
-    GenericResponseBodyDto response = ResponseUtil.success("Products fetched successfully", Map.of("products",products));
+    GenericResponseBodyDto response =
+        ResponseUtil.success("Products fetched successfully", Map.of("products", products));
     return ResponseEntity.ok(response);
   }
 
   @GetMapping("/category/{category}/price/{min}/{max}")
   @PreAuthorize("permitAll()")
   public ResponseEntity<GenericResponseBodyDto> getProductsByCategoryAndPriceRange(
-          @PathVariable String category,
-          @PathVariable Double min,
-          @PathVariable Double max,
-          Pageable pageable
-  ) {
-    GenericResponseBodyDto response = ResponseUtil.success("Products fetched successfully", Map.of("products", productService.getProductsByCategoryAndPriceRange(category, min, max, pageable)));
+      @PathVariable String category,
+      @PathVariable Double min,
+      @PathVariable Double max,
+      Pageable pageable) {
+    GenericResponseBodyDto response =
+        ResponseUtil.success(
+            "Products fetched successfully",
+            Map.of(
+                "products",
+                productService.getProductsByCategoryAndPriceRange(category, min, max, pageable)));
     return ResponseEntity.ok(response);
   }
 
   @GetMapping("/category/{category}/brand/{brand}")
   @PreAuthorize("permitAll()")
   public ResponseEntity<GenericResponseBodyDto> getProductsByCategoryAndBrand(
-          @PathVariable String category,
-          @PathVariable String brand,
-          Pageable pageable
-  ) {
-    GenericResponseBodyDto response = ResponseUtil.success("Products fetched successfully", Map.of("products", productService.getProductsByCategoryAndBrand(category, brand, pageable)));
+      @PathVariable String category, @PathVariable String brand, Pageable pageable) {
+    GenericResponseBodyDto response =
+        ResponseUtil.success(
+            "Products fetched successfully",
+            Map.of(
+                "products",
+                productService.getProductsByCategoryAndBrand(category, brand, pageable)));
     return ResponseEntity.ok(response);
   }
 
   @GetMapping("/category/{category}/brand/{brand}/price/{min}/{max}")
   @PreAuthorize("permitAll()")
   public ResponseEntity<GenericResponseBodyDto> getProductsByCategoryAndBrandAndPriceRange(
-          @PathVariable String category,
-          @PathVariable String brand,
-          @PathVariable Double min,
-          @PathVariable Double max,
-          Pageable pageable
-  ) {
-    GenericResponseBodyDto response = ResponseUtil.success("Products fetched successfully", Map.of("products", productService.getProductsByCategoryAndBrandAndPriceRange(category, brand, min, max, pageable)));
+      @PathVariable String category,
+      @PathVariable String brand,
+      @PathVariable Double min,
+      @PathVariable Double max,
+      Pageable pageable) {
+    GenericResponseBodyDto response =
+        ResponseUtil.success(
+            "Products fetched successfully",
+            Map.of(
+                "products",
+                productService.getProductsByCategoryAndBrandAndPriceRange(
+                    category, brand, min, max, pageable)));
     return ResponseEntity.ok(response);
   }
 
   @GetMapping
   @PreAuthorize("permitAll()")
-  public ResponseEntity<GenericResponseBodyDto> getProducts(
-          Pageable pageable
-          ) {
+  public ResponseEntity<GenericResponseBodyDto> getProducts(Pageable pageable) {
 
-      GenericResponseBodyDto response = ResponseUtil.success("Products fetched successfully", Map.of("products", productService.getProducts(pageable)));
-      return ResponseEntity.ok(response);
+    GenericResponseBodyDto response =
+        ResponseUtil.success(
+            "Products fetched successfully",
+            Map.of("products", productService.getProducts(pageable)));
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("search/{keyword}")
   @PreAuthorize("permitAll()")
   public ResponseEntity<GenericResponseBodyDto> searchProductByKeyword(
-          @PathVariable String keyword,
-          Pageable pageable
-  ) {
-    GenericResponseBodyDto response = ResponseUtil.success("Products fetched successfully", Map.of("products", productService.getProductsByKeyword(keyword, pageable)));
+      @PathVariable String keyword, Pageable pageable) {
+    GenericResponseBodyDto response =
+        ResponseUtil.success(
+            "Products fetched successfully",
+            Map.of("products", productService.getProductsByKeyword(keyword, pageable)));
     return ResponseEntity.ok(response);
   }
 }
