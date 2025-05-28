@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
 public enum ErrorCode {
+
   // User Domain (1000-1999)
   USER_NOT_FOUND("USR-1000", "User not found", HttpStatus.NOT_FOUND),
   USER_ALREADY_EXISTS("USR-1001", "User already exists", HttpStatus.CONFLICT),
