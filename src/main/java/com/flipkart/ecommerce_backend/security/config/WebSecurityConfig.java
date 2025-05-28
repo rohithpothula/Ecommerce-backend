@@ -22,21 +22,18 @@ public class WebSecurityConfig {
   @Autowired private JwtAuthenticationFilter jwtAuthenticationFilter;
 
   @Bean
-  public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+  public AuthenticationManager authenticationManager(
+      AuthenticationConfiguration authenticationConfiguration) throws Exception {
     return authenticationConfiguration.getAuthenticationManager();
   }
+
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     // configure chained method style
-    http.csrf().disable()
-        .cors().disable()
-        .httpBasic().disable()
-        .formLogin().disable();
+    http.csrf().disable().cors().disable().httpBasic().disable().formLogin().disable();
 
     // Configure stateless session management
-    http
-        .sessionManagement()
-        .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+    http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
     // Add the JWT filter before the standard UsernamePasswordAuthenticationFilter
     http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

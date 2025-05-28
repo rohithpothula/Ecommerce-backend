@@ -1,10 +1,8 @@
 package com.flipkart.ecommerce_backend.dtos;
 
-
-import lombok.Builder;
-
 import java.util.Set;
 import java.util.UUID;
+import lombok.Builder;
 
 @Builder
 public record UserDto(
@@ -16,12 +14,11 @@ public record UserDto(
     Set<String> roles,
     boolean isEnabled,
     boolean isEmailVerified
-//    String phoneNumber,
-//    String address,
-//    String city,
-//    String state,
-//    String country,
-//    String zipCode,
-//    boolean isAdmin
-) {
-}
+    //    String phoneNumber,
+    //    String address,
+    //    String city,
+    //    String state,
+    //    String country,
+    //    String zipCode,
+    //    boolean isAdmin
+    ) {}

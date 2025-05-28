@@ -1,11 +1,9 @@
 package com.flipkart.ecommerce_backend.repository;
 
 import com.flipkart.ecommerce_backend.models.LocalUser;
-
+import com.flipkart.ecommerce_backend.models.Role;
 import java.util.Optional;
 import java.util.UUID;
-
-import com.flipkart.ecommerce_backend.models.Role;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
